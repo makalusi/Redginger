@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth"><head><script id="aura-preview-performance-controller">
+(function() {
+if (window.__auraPreviewPerformanceController) return;
+const nativeRequestAnimationFrame = window.requestAnimationFrame
+? window.requestAnimationFrame.bind(window)
+: function(callback) { return window.setTimeout(function() { callback(Date.now()); }, 16); };
+const nativeCancelAnimationFrame = window.cancelAnimationFrame
+? window.cancelAnimationFrame.bind(window)
+: window.clearTimeout.bind(window);
+const nativeSetInterval = window.setInterval.bind(window);
+let paused = false;
+let nextFrameId = 1;
+const frameRecords = new Map();
+const pausedFrameCallbacks = new Map();
+const style = document.createElement('style');
+style.id = 'aura-preview-performance-style';
+style.textContent = [
+'html[data-aura-preview-paused="true"] *,',
+'html[data-aura-preview-paused="true"] *::before,',
+'html[data-aura-preview-paused="true"] *::after {',
+'  animation-play-state: paused !important;',
+'  transition-duration: 0s !important;',
+'  scroll-behavior: auto !important;',
+'}'
+].join('\n');
+document.head.appendChild(style);
+window.requestAnimationFrame = function(callback) {
+const frameId = nextFrameId++;
+if (paused) {
+pausedFrameCallbacks.set(frameId, callback);
+frameRecords.set(frameId, { paused: true });
+return frameId;
+}
+const nativeFrameId = nativeRequestAnimationFrame(function(timestamp) {
+frameRecords.delete(frameId);
+callback(timestamp);
+});
+frameRecords.set(frameId, { nativeFrameId: nativeFrameId });
+return frameId;
+};
+window.cancelAnimationFrame = function(frameId) {
+const record = frameRecords.get(frameId);
+pausedFrameCallbacks.delete(frameId);
+if (record && typeof record.nativeFrameId !== 'undefined') {
+nativeCancelAnimationFrame(record.nativeFrameId);
+}
+frameRecords.delete(frameId);
+};
+window.setInterval = function(callback, delay) {
+const args = Array.prototype.slice.call(arguments, 2);
+return nativeSetInterval(function() {
+if (paused) return;
+callback.apply(this, args);
+}, delay);
+};
+const flushPausedFrames = function() {
+const callbacks = Array.from(pausedFrameCallbacks.entries());
+pausedFrameCallbacks.clear();
+callbacks.forEach(function(entry) {
+const frameId = entry[0];
+const callback = entry[1];
+const nativeFrameId = nativeRequestAnimationFrame(function(timestamp) {
+frameRecords.delete(frameId);
+callback(timestamp);
+});
+frameRecords.set(frameId, { nativeFrameId: nativeFrameId });
+});
+};
+const setPaused = function(nextPaused) {
+const shouldPause = Boolean(nextPaused);
+if (paused === shouldPause) return;
+paused = shouldPause;
+document.documentElement.toggleAttribute('data-aura-preview-paused', paused);
+if (!paused) {
+flushPausedFrames();
+}
+};
+window.__auraPreviewPerformanceController = {
+setPaused: setPaused,
+get paused() {
+return paused;
+}
+};
+window.addEventListener('message', function(event) {
+if (event.source !== window.parent) return;
+if (!event.data || event.data.type !== 'aura-preview-performance-mode') return;
+setPaused(event.data.paused);
+});
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RED GINGER — Pan-Asian Cuisine · Traverse City, MI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'DM Sans', sans-serif; background:#0b0708; color:#f4ede4; }
+.font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: -0.01em; }
+.font-serif-it { font-family: 'Instrument Serif', serif; font-style: italic; }
+@keyframes scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.animate-marquee { animation: scroll 30s linear infinite; }
+.grain { background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 3px 3px; }
+.flame-grad { background: radial-gradient(ellipse at 50% 100%, rgba(232,65,24,0.55) 0%, rgba(232,65,24,0.15) 35%, transparent 70%); }
+.ember { background: radial-gradient(circle at 30% 30%, #ff6b35 0%, #d62828 40%, #6a0f0f 100%); }
+@keyframes flicker { 0%,100%{opacity:.85; transform:scale(1)} 50%{opacity:1; transform:scale(1.04)} }
+.flicker { animation: flicker 2.4s ease-in-out infinite; }
+@keyframes rise { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
+.rise { animation: rise .8s ease-out both; }
+
+    /* ---- CURSOR ---- */
+    body{cursor:none;}
+    #c-dot,#c-ring{position:fixed;top:0;left:0;border-radius:50%;pointer-events:none;z-index:9999;will-change:transform;}
+    #c-dot{width:8px;height:8px;background:#dc2626;box-shadow:0 0 12px #dc2626,0 0 28px rgba(220,38,38,.5);}
+    #c-ring{width:38px;height:38px;border:1.5px solid rgba(220,38,38,.55);transition:width .22s,height .22s,border-color .22s;}
+    .cursor-hover #c-ring{width:56px;height:56px;border-color:#dc2626;box-shadow:0 0 14px rgba(220,38,38,.5);}
+
+    /* ---- EMBER CANVAS ---- */
+    #ember-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;opacity:.5;}
+
+    /* ---- SCANLINES ---- */
+    .scanlines{position:fixed;inset:0;pointer-events:none;z-index:9997;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);}
+
+    /* ---- GLITCH ---- */
+    .glitch{position:relative;display:inline-block;}
+    .glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;font-family:inherit;font-size:inherit;letter-spacing:inherit;}
+    .glitch::before{color:#ff003c;animation:glitch-a 5s infinite;mix-blend-mode:screen;}
+    .glitch::after{color:#00eeff;animation:glitch-b 5s infinite;mix-blend-mode:screen;}
+    @keyframes glitch-a{
+      0%,87%,100%{clip-path:inset(100% 0 0 0);transform:translate(0);}
+      88%{clip-path:inset(8% 0 78% 0);transform:translate(-6px,1px);}
+      90%{clip-path:inset(55% 0 22% 0);transform:translate(6px,-1px);}
+      92%{clip-path:inset(28% 0 48% 0);transform:translate(-4px,2px);}
+      94%{clip-path:inset(75% 0 8% 0);transform:translate(4px,0);}
+      96%{clip-path:inset(42% 0 38% 0);transform:translate(-5px,-1px);}
+    }
+    @keyframes glitch-b{
+      0%,89%,100%{clip-path:inset(100% 0 0 0);transform:translate(0);}
+      90%{clip-path:inset(18% 0 68% 0);transform:translate(5px,0);}
+      92%{clip-path:inset(65% 0 12% 0);transform:translate(-5px,1px);}
+      94%{clip-path:inset(35% 0 42% 0);transform:translate(3px,-1px);}
+      96%{clip-path:inset(5% 0 88% 0);transform:translate(-3px,2px);}
+    }
+
+    /* ---- HERO FLOAT ---- */
+    .hero-float{animation:hero-float 5s ease-in-out infinite;}
+    @keyframes hero-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+    /* ---- SCROLL REVEAL ---- */
+    .reveal-me{opacity:0;transform:translateY(44px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1);}
+    .reveal-me.from-left{transform:translateX(-50px);}
+    .reveal-me.from-right{transform:translateX(50px);}
+    .reveal-me.scale-in{transform:scale(.9) translateY(20px);}
+    .reveal-me.revealed{opacity:1 !important;transform:none !important;}
+
+    /* ---- NAV BREATHE ---- */
+    header nav{animation:nav-breathe 4s ease-in-out infinite;}
+    @keyframes nav-breathe{0%,100%{box-shadow:0 8px 32px rgba(0,0,0,.6);}50%{box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(220,38,38,.15);}}
+
+    /* ---- FLAME PULSE ---- */
+    .flame-grad{animation:flame-pulse 3s ease-in-out infinite;}
+    @keyframes flame-pulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+
+    /* ---- RIPPLE ---- */
+    .ripple-wave{position:absolute;border-radius:50%;background:rgba(255,255,255,.2);transform:scale(0);animation:ripple-go .65s ease-out forwards;pointer-events:none;}
+    @keyframes ripple-go{to{transform:scale(4);opacity:0;}}
+
+    /* ---- MARQUEE PAUSE ON HOVER ---- */
+    .animate-marquee:hover{animation-play-state:paused;}
+</style><!-- aura-ga4-start -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2M6V79H761"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-2M6V79H761');
+</script>
+<!-- aura-ga4-end -->
+</head>
+  <body class="antialiased overflow-x-hidden selection:bg-red-600 selection:text-white">
+    <canvas id="ember-canvas"></canvas>
+    <div id="c-dot"></div>
+    <div id="c-ring"></div>
+    <div class="scanlines"></div>
+    <!-- NAV -->
+    <header class="fixed top-3 inset-x-0 z-50 px-3 sm:px-6 flex justify-center">
+      <nav class="w-full max-w-7xl bg-black/80 backdrop-blur border border-white/10 rounded-xl px-4 sm:px-6 py-3 flex items-center justify-between shadow-2xl">
+        <a href="#" class="flex items-center">
+          <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-10 w-auto">
+        </a>
+        <div class="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest text-white/70">
+          <a href="#burgers" class="hover:text-white transition">Small Plates</a>
+          <a href="#hotdogs" class="hover:text-white transition">Sushi</a>
+          <a href="menu.html" class="hover:text-white transition">Menu</a>
+          <a href="#contact" class="hover:text-white transition">Contact</a>
+        </div>
+        <a href="reserve.html" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-xs uppercase tracking-widest font-semibold px-4 py-2 rounded-lg">
+          Reserve
+          <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+        </a>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="relative min-h-screen pt-32 pb-16 overflow-hidden">
+      <div class="absolute inset-0 grain opacity-60"></div>
+      <div class="absolute inset-x-0 bottom-0 h-2/3 flame-grad pointer-events-none"></div>
+
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6">
+        <!-- top row -->
+        <div class="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-white/50 mb-10 rise">
+          <span class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500 flicker"></span>
+            Traverse City · MI
+          </span>
+          <span class="hidden sm:block">Est. — Pan-Asian Cuisine</span>
+          <span class="hidden md:flex items-center gap-2">
+            <iconify-icon icon="solar:clock-circle-linear" width="14"></iconify-icon>
+            Tue – Sat · 4:00 — 22:00
+          </span>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8 items-end">
+          <!-- Left -->
+          <div class="lg:col-span-12 rise text-center flex flex-col items-center">
+            <p class="font-serif-it text-red-400 text-xl sm:text-2xl mb-3">
+              Bold flavors, Asian craft —
+            </p>
+            <h1 class="font-display text-white leading-[0.82] tracking-tight hero-float" style="font-size: clamp(96px, 18vw, 280px)">
+              <span class="glitch" data-text="RED">RED</span>
+              <br>
+              <span class="glitch text-red-600" data-text="GINGER">GINGER</span>
+            </h1>
+            <p class="mt-6 max-w-xl text-sm sm:text-base text-white/65">
+              Japanese, Thai, Vietnamese and Korean influences, woven into one
+              inspired menu. Signature sushi, small plates, and vibrant large plates —
+              in the heart of Traverse City.
+            </p>
+
+            <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <a href="#menu" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-sm uppercase tracking-widest font-semibold px-6 py-3.5 rounded-xl shadow-lg shadow-red-900/40">
+                <iconify-icon icon="solar:fire-bold" width="18"></iconify-icon>
+                View the menu
+              </a>
+              <a href="reserve.html" class="inline-flex items-center gap-2 border border-white/15 hover:bg-white/5 transition text-white text-sm uppercase tracking-widest font-semibold px-6 py-3.5 rounded-xl">
+                <iconify-icon icon="solar:calendar-linear" width="18"></iconify-icon>
+                Reserve a Table
+              </a>
+            </div>
+
+            <!-- ribbon facts -->
+            <div class="mt-12 grid grid-cols-3 gap-4 max-w-lg mx-auto text-center">
+              <div>
+                <p class="font-display text-3xl text-white">
+                  16
+                  <span class="text-red-500">+</span>
+                </p>
+                <p class="text-xs uppercase tracking-widest text-white/50 mt-1">
+                  Signature rolls
+                </p>
+              </div>
+              <div>
+                <p class="font-display text-3xl text-white">
+                  100
+                  <span class="text-red-500">%</span>
+                </p>
+                <p class="text-xs uppercase tracking-widest text-white/50 mt-1">
+                  Fresh fish
+                </p>
+              </div>
+              <div>
+                <p class="font-display text-3xl text-white">
+                  4
+                  <span class="text-red-500">×</span>
+                </p>
+                <p class="text-xs uppercase tracking-widest text-white/50 mt-1">
+                  Asian cuisines
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right visual -->
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <section class="border-y border-white/10 bg-black overflow-hidden py-6">
+      <div class="flex animate-marquee whitespace-nowrap">
+        <div class="flex items-center gap-10 px-5 font-display text-4xl sm:text-5xl text-white/90">
+          <span>SIGNATURE SUSHI</span>
+          <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
+          <span>SPRING ROLLS</span>
+          <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
+          <span>THAI CURRY</span>
+          <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
+          <span>TRAVERSE CITY</span>
+          <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
+          <span>PAN-ASIAN</span>
+          <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
+        </div>
+        <div class="flex items-center gap-10 px-5 font-display text-4xl sm:text-5xl text-white/90">
+          <span>SIGNATURE SUSHI</span>
+          <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
+          <span>SPRING ROLLS</span>
+          <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
+          <span>THAI CURRY</span>
+          <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
+          <span>TRAVERSE CITY</span>
+          <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
+          <span>PAN-ASIAN</span>
+          <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED DISHES -->
+    <section class="py-20 px-4 sm:px-6 relative overflow-hidden">
+      <div class="absolute inset-0 grain opacity-40"></div>
+      <div class="relative max-w-7xl mx-auto">
+        <!-- heading row -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+          <div>
+            <p class="font-serif-it text-red-400 text-lg mb-2">What we do best —</p>
+            <h2 class="font-display text-6xl sm:text-8xl text-white leading-none tracking-tight">
+              BOLD <span class="text-red-600">&amp;</span><br>FRESH
+            </h2>
+          </div>
+          <p class="text-sm text-white/55 max-w-xs">
+            Three reasons guests keep coming back — fire, craft, and the freshest fish in Traverse City.
+          </p>
+        </div>
+
+        <!-- three cards -->
+        <div class="grid md:grid-cols-3 gap-5">
+
+          <!-- Card 1 — Dragon Wings -->
+          <div class="group relative rounded-2xl overflow-hidden aspect-[3/4] bg-amber-950">
+            <img
+              src="https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=800&q=80"
+              alt="Dragon Wings"
+              class="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 group-hover:scale-105 transition duration-500"
+            >
+            <!-- colour wash -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+            <div class="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-amber-600/30 to-transparent"></div>
+
+            <!-- tag -->
+            <span class="absolute top-5 left-5 text-[10px] uppercase tracking-[0.25em] bg-amber-500 text-black font-semibold px-3 py-1 rounded-full">
+              Small Plates
+            </span>
+
+            <!-- bottom content -->
+            <div class="absolute inset-x-0 bottom-0 p-6">
+              <h3 class="font-display text-4xl text-white leading-none">DRAGON<br>WINGS</h3>
+              <p class="text-xs text-white/60 mt-2 mb-5">
+                Crispy wings · Asian-spiced glaze · Sesame · Scallion
+              </p>
+              <a href="#burgers" class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 transition text-black text-xs uppercase tracking-widest font-bold px-5 py-2.5 rounded-lg">
+                Order Now
+                <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 2 — Red Dragon Roll (featured / tall) -->
+          <div class="group relative rounded-2xl overflow-hidden aspect-[3/4] bg-red-950 md:-mt-6 md:mb-6">
+            <img
+              src="https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=800&q=80"
+              alt="Red Dragon Roll"
+              class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition duration-500"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+            <div class="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-red-700/40 to-transparent"></div>
+
+            <!-- popular badge -->
+            <div class="absolute top-5 left-5 flex items-center gap-2">
+              <span class="text-[10px] uppercase tracking-[0.25em] bg-red-600 text-white font-semibold px-3 py-1 rounded-full">
+                Most Popular
+              </span>
+            </div>
+            <iconify-icon icon="solar:fire-bold" width="28" class="absolute top-5 right-5 text-red-400 flicker"></iconify-icon>
+
+            <div class="absolute inset-x-0 bottom-0 p-6">
+              <h3 class="font-display text-4xl text-white leading-none">RED<br>DRAGON</h3>
+              <p class="text-xs text-white/60 mt-2 mb-5">
+                Spicy tuna · Avocado · Sriracha · Eel sauce
+              </p>
+              <a href="#hotdogs" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-xs uppercase tracking-widest font-bold px-5 py-2.5 rounded-lg">
+                Order Now
+                <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 3 — Thai Curry -->
+          <div class="group relative rounded-2xl overflow-hidden aspect-[3/4] bg-teal-950">
+            <img
+              src="https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=800&q=80"
+              alt="Thai Curry"
+              class="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 group-hover:scale-105 transition duration-500"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+            <div class="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-teal-600/30 to-transparent"></div>
+
+            <span class="absolute top-5 left-5 text-[10px] uppercase tracking-[0.25em] bg-teal-400 text-black font-semibold px-3 py-1 rounded-full">
+              Large Plates
+            </span>
+
+            <div class="absolute inset-x-0 bottom-0 p-6">
+              <h3 class="font-display text-4xl text-white leading-none">THAI<br>CURRY</h3>
+              <p class="text-xs text-white/60 mt-2 mb-5">
+                Coconut milk · Lemongrass · Fresh herbs · Jasmine rice
+              </p>
+              <a href="#menu" class="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 transition text-black text-xs uppercase tracking-widest font-bold px-5 py-2.5 rounded-lg">
+                Order Now
+                <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TODAY'S MENU SCROLL -->
+    <section class="relative py-20 overflow-hidden bg-neutral-950">
+      <div class="absolute inset-0 grain opacity-30"></div>
+      <!-- subtle red glow left -->
+      <div class="absolute left-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-red-700/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="flex flex-col lg:flex-row lg:items-center gap-10">
+
+          <!-- Left label -->
+          <div class="lg:w-56 shrink-0">
+            <p class="font-serif-it text-red-400 text-lg mb-1">Today's Menu</p>
+            <h2 class="font-display text-5xl sm:text-6xl text-white leading-none tracking-tight">
+              OUR<br>MENU
+            </h2>
+            <p class="mt-4 text-xs text-white/50 leading-relaxed">
+              Fresh ingredients, bold Asian flavours — crafted nightly.
+            </p>
+            <!-- arrow buttons -->
+            <div class="mt-8 flex gap-3">
+              <button id="scroll-prev" class="w-10 h-10 rounded-full border border-white/20 hover:border-red-500 hover:bg-red-600 transition flex items-center justify-center text-white/70 hover:text-white">
+                <iconify-icon icon="solar:arrow-left-linear" width="18"></iconify-icon>
+              </button>
+              <button id="scroll-next" class="w-10 h-10 rounded-full bg-red-600 hover:bg-red-500 transition flex items-center justify-center text-white">
+                <iconify-icon icon="solar:arrow-right-linear" width="18"></iconify-icon>
+              </button>
+            </div>
+            <a href="menu.html" class="mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-transparent border border-red-500 text-red-400 text-xs font-semibold tracking-widest uppercase hover:bg-red-600 hover:border-red-600 hover:text-white transition">
+              View More
+              <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+            </a>
+          </div>
+
+          <!-- Scrollable pill cards -->
+          <div id="menu-scroll" class="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth" style="scrollbar-width:none; -ms-overflow-style:none;">
+
+            <!-- Fresh Sushi -->
+            <div class="snap-start shrink-0 w-44 bg-white/5 border border-white/10 rounded-[3rem] p-5 flex flex-col items-center text-center hover:border-red-600/60 hover:bg-white/10 transition group">
+              <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-white/10 group-hover:border-red-600/50 transition mb-4 bg-neutral-900">
+                <img src="https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=300&q=80" alt="Signature Sushi" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+              </div>
+              <h4 class="font-display text-xl text-white leading-tight">SIGNATURE<br>SUSHI</h4>
+              <p class="mt-2 text-[11px] text-white/50 leading-snug">16+ hand-crafted rolls &amp; nigiri</p>
+            </div>
+
+            <!-- Small Plates — featured -->
+            <div class="snap-start shrink-0 w-44 bg-red-600 rounded-[3rem] p-5 flex flex-col items-center text-center group relative overflow-hidden">
+              <div class="absolute inset-0 grain opacity-20"></div>
+              <div class="relative w-28 h-28 rounded-full overflow-hidden border-4 border-white/30 mb-4 bg-red-800">
+                <img src="https://images.unsplash.com/photo-1625943553852-781c6dd46faa?w=300&q=80" alt="Small Plates" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+              </div>
+              <h4 class="relative font-display text-xl text-white leading-tight">SMALL<br>PLATES</h4>
+              <p class="relative mt-2 text-[11px] text-white/80 leading-snug">Bao, spring rolls, wings &amp; more</p>
+              <span class="relative mt-3 text-[9px] uppercase tracking-widest bg-white/20 text-white px-2.5 py-1 rounded-full">Popular</span>
+            </div>
+
+            <!-- Dragon Wings -->
+            <div class="snap-start shrink-0 w-44 bg-white/5 border border-white/10 rounded-[3rem] p-5 flex flex-col items-center text-center hover:border-red-600/60 hover:bg-white/10 transition group">
+              <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-white/10 group-hover:border-red-600/50 transition mb-4 bg-neutral-900">
+                <img src="https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=300&q=80" alt="Dragon Wings" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+              </div>
+              <h4 class="font-display text-xl text-white leading-tight">DRAGON<br>WINGS</h4>
+              <p class="mt-2 text-[11px] text-white/50 leading-snug">Asian-glazed crispy chicken wings</p>
+            </div>
+
+            <!-- Thai Curry -->
+            <div class="snap-start shrink-0 w-44 bg-white/5 border border-white/10 rounded-[3rem] p-5 flex flex-col items-center text-center hover:border-red-600/60 hover:bg-white/10 transition group">
+              <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-white/10 group-hover:border-red-600/50 transition mb-4 bg-neutral-900">
+                <img src="https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=300&q=80" alt="Thai Curry" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+              </div>
+              <h4 class="font-display text-xl text-white leading-tight">THAI<br>CURRY</h4>
+              <p class="mt-2 text-[11px] text-white/50 leading-snug">Coconut &amp; lemongrass large plate</p>
+            </div>
+
+            <!-- Miso Sea Bass -->
+            <div class="snap-start shrink-0 w-44 bg-white/5 border border-white/10 rounded-[3rem] p-5 flex flex-col items-center text-center hover:border-red-600/60 hover:bg-white/10 transition group">
+              <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-white/10 group-hover:border-red-600/50 transition mb-4 bg-neutral-900">
+                <img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=300&q=80" alt="Miso Sea Bass" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+              </div>
+              <h4 class="font-display text-xl text-white leading-tight">MISO<br>SEA BASS</h4>
+              <p class="mt-2 text-[11px] text-white/50 leading-snug">Glazed miso Chilean sea bass</p>
+            </div>
+
+            <!-- Shaking Beef -->
+            <div class="snap-start shrink-0 w-44 bg-white/5 border border-white/10 rounded-[3rem] p-5 flex flex-col items-center text-center hover:border-red-600/60 hover:bg-white/10 transition group">
+              <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-white/10 group-hover:border-red-600/50 transition mb-4 bg-neutral-900">
+                <img src="https://images.unsplash.com/photo-1558030006-450675393462?w=300&q=80" alt="Shaking Beef" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+              </div>
+              <h4 class="font-display text-xl text-white leading-tight">SHAKING<br>BEEF</h4>
+              <p class="mt-2 text-[11px] text-white/50 leading-snug">Vietnamese wok-tossed filet</p>
+            </div>
+
+            <!-- Spring Rolls -->
+            <div class="snap-start shrink-0 w-44 bg-white/5 border border-white/10 rounded-[3rem] p-5 flex flex-col items-center text-center hover:border-red-600/60 hover:bg-white/10 transition group">
+              <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-white/10 group-hover:border-red-600/50 transition mb-4 bg-neutral-900">
+                <img src="https://images.unsplash.com/photo-1551248429-40975aa4de74?w=300&q=80" alt="Spring Rolls" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+              </div>
+              <h4 class="font-display text-xl text-white leading-tight">SPRING<br>ROLLS</h4>
+              <p class="mt-2 text-[11px] text-white/50 leading-snug">Crispy Vietnamese with sweet chili</p>
+            </div>
+
+            <!-- Lobster Dynamite -->
+            <div class="snap-start shrink-0 w-44 bg-white/5 border border-white/10 rounded-[3rem] p-5 flex flex-col items-center text-center hover:border-red-600/60 hover:bg-white/10 transition group">
+              <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-white/10 group-hover:border-red-600/50 transition mb-4 bg-neutral-900">
+                <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?w=300&q=80" alt="Lobster Dynamite" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+              </div>
+              <h4 class="font-display text-xl text-white leading-tight">LOBSTER<br>DYNAMITE</h4>
+              <p class="mt-2 text-[11px] text-white/50 leading-snug">Tempura lobster · spicy mayo</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (function(){
+          const track = document.getElementById('menu-scroll');
+          document.getElementById('scroll-next').addEventListener('click', function(){ track.scrollBy({ left: 192, behavior:'smooth' }); });
+          document.getElementById('scroll-prev').addEventListener('click', function(){ track.scrollBy({ left: -192, behavior:'smooth' }); });
+        })();
+      </script>
+    </section>
+
+    <!-- MENU FORMULES -->
+    <section id="menu" class="py-24 px-4 sm:px-6 relative">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-14">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-red-500 mb-3">
+              — Experience
+            </p>
+            <h2 class="font-display text-5xl sm:text-7xl text-white tracking-tight leading-none">
+              CHOOSE
+              <br>
+              YOUR STYLE
+            </h2>
+          </div>
+          <p class="text-sm text-white/60 max-w-sm">
+            From light bites to bold large plates — every dish crafted with
+            fresh ingredients and bold Asian flavors.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-5">
+          <!-- Small Plates -->
+          <div class="group relative bg-neutral-950 border border-white/10 rounded-2xl p-7 hover:border-red-600/60 transition">
+            <div class="flex items-baseline justify-between">
+              <span class="font-display text-5xl text-white">SMALL</span>
+              <span class="text-xs uppercase tracking-widest text-white/40">
+                Plates
+              </span>
+            </div>
+            <div class="mt-6 h-px bg-white/10"></div>
+            <p class="mt-6 text-sm text-white/65">
+              Share or savour solo. Spring rolls, bao buns, calamari, wings —
+              the perfect start to any meal.
+            </p>
+            <div class="mt-8 flex items-center gap-2 text-white/50 text-xs uppercase tracking-widest">
+              <iconify-icon icon="solar:plate-linear" width="16"></iconify-icon>
+              Shareable
+            </div>
+          </div>
+          <!-- Sushi -->
+          <div class="group relative bg-red-600 rounded-2xl p-7 overflow-hidden">
+            <div class="absolute -right-6 -top-6 text-[10px] uppercase tracking-[0.3em] bg-black text-white px-4 py-1 rotate-12">
+              Popular
+            </div>
+            <div class="flex items-baseline justify-between">
+              <span class="font-display text-5xl text-white">SUSHI</span>
+              <span class="text-xs uppercase tracking-widest text-white/80">
+                Rolls
+              </span>
+            </div>
+            <div class="mt-6 h-px bg-white/20"></div>
+            <p class="mt-6 text-sm text-white/90">
+              Signature rolls, traditional maki, nigiri &amp; sashimi —
+              crafted with the freshest fish.
+            </p>
+            <div class="mt-8 flex items-center justify-between">
+              <span class="text-xs uppercase tracking-widest text-white/80 flex items-center gap-2">
+                <iconify-icon icon="solar:star-linear" width="16"></iconify-icon>
+                16+ rolls
+              </span>
+              <span class="font-display text-2xl text-white">Chef's picks</span>
+            </div>
+          </div>
+          <!-- Large Plates -->
+          <div class="group relative bg-neutral-950 border border-white/10 rounded-2xl p-7 hover:border-red-600/60 transition">
+            <div class="flex items-baseline justify-between">
+              <span class="font-display text-5xl text-white">LARGE</span>
+              <span class="text-xs uppercase tracking-widest text-white/40">
+                Plates
+              </span>
+            </div>
+            <div class="mt-6 h-px bg-white/10"></div>
+            <p class="mt-6 text-sm text-white/65">
+              Miso sea bass, Thai curry, shaking beef, lobster fried rice —
+              bold mains inspired by Asia.
+            </p>
+            <div class="mt-8 flex items-center justify-between">
+              <span class="text-xs uppercase tracking-widest text-white/50 flex items-center gap-2">
+                <iconify-icon icon="solar:fire-linear" width="16"></iconify-icon>
+                Ask about today's fish
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing strip -->
+        <div class="mt-8 grid sm:grid-cols-3 gap-3">
+          <div class="bg-white/5 border border-white/10 rounded-xl px-6 py-5 flex items-center justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-widest text-white/50">
+                Small plates from
+              </p>
+              <p class="font-display text-3xl text-white mt-1">$12</p>
+            </div>
+            <iconify-icon icon="solar:plate-linear" width="22" class="text-red-500"></iconify-icon>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-xl px-6 py-5 flex items-center justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-widest text-white/50">
+                Signature rolls from
+              </p>
+              <p class="font-display text-3xl text-white mt-1">$18</p>
+            </div>
+            <iconify-icon icon="solar:star-linear" width="22" class="text-red-500"></iconify-icon>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-xl px-6 py-5 flex items-center justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-widest text-white/50">
+                Large plates from
+              </p>
+              <p class="font-display text-3xl text-white mt-1">$28</p>
+            </div>
+            <iconify-icon icon="solar:fire-linear" width="22" class="text-red-500"></iconify-icon>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SPECIAL OCCASIONS -->
+    <section class="py-24 px-4 sm:px-6 bg-neutral-950 relative overflow-hidden">
+      <div class="absolute inset-0 grain opacity-20 pointer-events-none"></div>
+      <div class="absolute right-0 top-1/3 w-96 h-96 bg-red-700/15 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto">
+
+        <!-- Heading -->
+        <div class="mb-12">
+          <p class="text-xs uppercase tracking-[0.3em] text-red-500 mb-3">— Make It Memorable</p>
+          <h2 class="font-display text-5xl sm:text-7xl text-white tracking-tight leading-none">
+            EVERY<br>OCCASION
+          </h2>
+        </div>
+
+        <!-- Mosaic Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 grid-rows-2 gap-4 h-auto lg:h-[580px]">
+
+          <!-- Card 1 – Events (top-left) -->
+          <div class="relative rounded-3xl overflow-hidden group col-span-1 row-span-1 min-h-[240px] lg:min-h-0">
+            <img src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=600&q=80" alt="Events" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+            <div class="absolute inset-0 p-6 flex flex-col justify-between">
+              <span class="self-start bg-red-600 text-white text-[10px] uppercase tracking-widest px-3 py-1 rounded-full">Book Now</span>
+              <div>
+                <p class="font-serif-it text-red-300 text-sm mb-1">Private &amp; Group</p>
+                <h3 class="font-display text-3xl text-white leading-none">EVENTS</h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 – Date Night & Proposal (center, tall – spans 2 rows) -->
+          <div class="relative rounded-3xl overflow-hidden group col-span-2 row-span-2 min-h-[360px] lg:min-h-0 order-3 lg:order-none">
+            <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=80" alt="Date Night" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"></div>
+            <!-- Premium Quality label -->
+            <div class="absolute top-6 left-6">
+              <p class="font-serif-it text-white/80 text-sm italic">Premium Experience</p>
+            </div>
+            <!-- CTA button -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <a href="#reservations" class="inline-flex items-center gap-2 bg-white text-neutral-900 text-xs font-bold uppercase tracking-widest px-5 py-2.5 rounded-full hover:bg-red-500 hover:text-white transition">
+                Reserve Table
+                <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+              </a>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 p-6">
+              <p class="font-serif-it text-red-300 text-sm mb-1">Romance &amp; Proposals</p>
+              <h3 class="font-display text-4xl sm:text-5xl text-white leading-none">DATE NIGHT<br>&amp; PROPOSAL</h3>
+              <p class="mt-3 text-sm text-white/60 max-w-xs">Candlelit tables, curated menus &amp; bespoke proposal packages designed to leave them speechless.</p>
+            </div>
+          </div>
+
+          <!-- Card 3 – Seasonal & Holiday Bundle (right, tall – spans 2 rows) -->
+          <div class="relative rounded-3xl overflow-hidden group col-span-1 row-span-2 min-h-[360px] lg:min-h-0 order-4 lg:order-none" style="background: linear-gradient(145deg, #b91c1c 0%, #7f1d1d 60%, #1a0a0a 100%);">
+            <img src="https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=500&q=80" alt="Seasonal Bundle" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-red-900/40"></div>
+            <!-- Badge -->
+            <div class="absolute top-5 right-5">
+              <div class="w-14 h-14 rounded-full bg-white/15 border border-white/30 flex flex-col items-center justify-center text-center">
+                <span class="text-white font-bold text-xs leading-none">NEW</span>
+                <span class="text-white/70 text-[9px] leading-none mt-0.5">SEASON</span>
+              </div>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 p-6">
+              <p class="font-serif-it text-red-300 text-sm mb-1">Festive &amp; Limited</p>
+              <h3 class="font-display text-3xl text-white leading-none">SEASONAL<br>&amp; HOLIDAY<br>BUNDLE</h3>
+              <p class="mt-3 text-xs text-white/60 leading-relaxed">Exclusive tasting menus &amp; gift packages for every festive season.</p>
+              <a href="#reservations" class="mt-5 inline-flex items-center gap-1.5 text-red-300 text-xs uppercase tracking-widest hover:text-white transition">
+                Learn More <iconify-icon icon="solar:arrow-right-linear" width="13"></iconify-icon>
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 4 – Milestone Celebration (bottom-left) -->
+          <div class="relative rounded-3xl overflow-hidden group col-span-1 row-span-1 min-h-[240px] lg:min-h-0 order-2 lg:order-none">
+            <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80" alt="Milestone Celebration" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent"></div>
+            <div class="absolute inset-0 p-6 flex flex-col justify-between">
+              <span class="self-start bg-white/10 border border-white/20 text-white text-[10px] uppercase tracking-widest px-3 py-1 rounded-full">Celebrate</span>
+              <div>
+                <p class="font-serif-it text-red-300 text-sm mb-1">Birthdays &amp; Anniversaries</p>
+                <h3 class="font-display text-3xl text-white leading-none">MILESTONE<br>CELEBRATION</h3>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom CTA strip -->
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/5 border border-white/10 rounded-2xl px-7 py-5">
+          <p class="text-white/70 text-sm">Planning something special? Our events team will make it unforgettable.</p>
+          <a href="mailto:events@redginger.com" class="shrink-0 inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold uppercase tracking-widest px-6 py-3 rounded-full transition">
+            Contact Events Team
+            <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CHEF / OUR STORY -->
+    <section class="border-y border-white/10 bg-neutral-950 py-24 px-4 sm:px-6 overflow-hidden relative">
+      <div class="absolute inset-0 grain opacity-20 pointer-events-none"></div>
+      <div class="absolute left-0 bottom-0 w-[500px] h-[500px] bg-red-800/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto">
+
+        <!-- Two-column split -->
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+          <!-- Left — image stack -->
+          <div class="relative">
+            <!-- Main image -->
+            <div class="rounded-3xl overflow-hidden aspect-[4/5]">
+              <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=900&q=80" alt="Chef at Red Ginger" class="w-full h-full object-cover">
+            </div>
+            <!-- Floating accent card -->
+            <div class="absolute -bottom-6 -right-6 bg-red-600 rounded-2xl px-6 py-5 shadow-2xl max-w-[200px]">
+              <p class="font-display text-4xl text-white leading-none">12+</p>
+              <p class="text-xs text-white/80 uppercase tracking-widest mt-1">Years of craft</p>
+            </div>
+            <!-- Small floating badge -->
+            <div class="absolute top-6 -right-4 bg-neutral-900 border border-white/10 rounded-xl px-4 py-3 shadow-xl">
+              <div class="flex items-center gap-2">
+                <iconify-icon icon="solar:star-bold" class="text-red-500" width="16"></iconify-icon>
+                <span class="text-white text-sm font-semibold">4.9</span>
+              </div>
+              <p class="text-white/50 text-[10px] uppercase tracking-wider mt-0.5">Guest rating</p>
+            </div>
+          </div>
+
+          <!-- Right — story text -->
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-red-500 mb-4">— Our Story</p>
+            <h2 class="font-display text-5xl sm:text-6xl text-white tracking-tight leading-none mb-8">
+              PASSION<br>ON EVERY<br>PLATE
+            </h2>
+
+            <div class="space-y-5 text-white/65 text-sm leading-relaxed">
+              <p>
+                Red Ginger was born from a single belief — that bold Asian flavours and fine dining belong together. Our head chef spent over a decade training across Tokyo, Bangkok, and Hong Kong before bringing that knowledge home.
+              </p>
+              <p>
+                Every dish on our menu is a conversation between tradition and creativity. We source the freshest local produce, pair it with authentic Asian technique, and plate it with an attention to detail that turns every meal into a memory.
+              </p>
+            </div>
+
+            <!-- Stats row -->
+            <div class="mt-10 grid grid-cols-3 gap-6 border-t border-white/10 pt-8">
+              <div>
+                <p class="font-display text-4xl text-white">50+</p>
+                <p class="text-xs uppercase tracking-widest text-white/40 mt-1">Menu items</p>
+              </div>
+              <div>
+                <p class="font-display text-4xl text-white">3</p>
+                <p class="text-xs uppercase tracking-widest text-white/40 mt-1">Cuisine styles</p>
+              </div>
+              <div>
+                <p class="font-display text-4xl text-white">1</p>
+                <p class="text-xs uppercase tracking-widest text-white/40 mt-1">Vision</p>
+              </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="mt-10 flex flex-wrap gap-4">
+              <a href="menu.html" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold uppercase tracking-widest px-6 py-3 rounded-full transition">
+                Explore The Menu
+                <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+              </a>
+              <a href="#reservations" class="inline-flex items-center gap-2 border border-white/20 hover:border-red-500 text-white/70 hover:text-white text-xs font-semibold uppercase tracking-widest px-6 py-3 rounded-full transition">
+                Reserve a Table
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SUSHI ROLLS -->
+    <section class="sm:px-6 pt-24 pr-4 pb-24 pl-4" id="hotdogs">
+      <div class="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
+        <!-- Signature Rolls -->
+        <div class="lg:col-span-2">
+          <p class="text-xs uppercase tracking-[0.3em] text-red-500 mb-3">
+            — Sushi
+          </p>
+          <h2 class="font-display text-5xl sm:text-6xl text-white tracking-tight leading-none mb-10">
+            SIGNATURE
+            <br>
+            ROLLS
+          </h2>
+
+          <div class="mb-6 grid grid-cols-3 gap-3">
+            <img src="https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=800&q=80" alt="Red Dragon roll" class="aspect-[4/3] w-full object-cover border-white/10 border rounded-xl">
+            <img src="https://images.unsplash.com/photo-1553621042-f6e147245754?w=500&q=80" alt="Ginger Tuna roll" class="w-full aspect-[4/3] object-cover rounded-xl border border-white/10">
+            <img src="https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=500&q=80" alt="Lobster Dynamite roll" class="w-full aspect-[4/3] object-cover rounded-xl border border-white/10">
+          </div>
+          <div class="space-y-3">
+            <div class="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-6 rounded-xl border border-white/10 hover:border-red-600/60 hover:bg-neutral-950 transition">
+              <div>
+                <h3 class="font-display text-2xl text-white">
+                  RED DRAGON
+                </h3>
+                <p class="text-xs uppercase tracking-widest text-white/40 mt-1">
+                  House favorite
+                </p>
+                <p class="text-sm text-white/60 mt-3">
+                  Spicy tuna inside · Avocado top · Sriracha · Eel sauce
+                </p>
+              </div>
+              <iconify-icon icon="solar:arrow-right-up-linear" class="text-white/30 group-hover:text-red-500 transition shrink-0" width="22"></iconify-icon>
+            </div>
+            <div class="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-6 rounded-xl border border-white/10 hover:border-red-600/60 hover:bg-neutral-950 transition">
+              <div>
+                <h3 class="font-display text-2xl text-white">
+                  GINGER TUNA
+                </h3>
+                <p class="text-xs uppercase tracking-widest text-white/40 mt-1">
+                  Chef's signature
+                </p>
+                <p class="text-sm text-white/60 mt-3">
+                  Yellowfin tuna · Pickled ginger · Yuzu ponzu · Micro greens
+                </p>
+              </div>
+              <iconify-icon icon="solar:arrow-right-up-linear" class="text-white/30 group-hover:text-red-500 transition shrink-0" width="22"></iconify-icon>
+            </div>
+            <div class="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-6 rounded-xl border border-white/10 hover:border-red-600/60 hover:bg-neutral-950 transition">
+              <div>
+                <h3 class="font-display text-2xl text-white">
+                  LOBSTER DYNAMITE
+                </h3>
+                <p class="text-xs uppercase tracking-widest text-white/40 mt-1">
+                  Indulgent
+                </p>
+                <p class="text-sm text-white/60 mt-3">
+                  Tempura lobster · Spicy mayo · Cucumber · Masago
+                </p>
+              </div>
+              <iconify-icon icon="solar:arrow-right-up-linear" class="text-white/30 group-hover:text-red-500 transition shrink-0" width="22"></iconify-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chef Dan's Specialty -->
+        <div class="bg-red-600 rounded-2xl p-8 flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute inset-0 grain opacity-30"></div>
+          <div class="relative">
+            <iconify-icon icon="solar:chef-hat-minimalistic-linear" width="48" class="text-white/90"></iconify-icon>
+            <p class="text-xs uppercase tracking-[0.3em] text-white/80 mt-6">
+              — Specialty
+            </p>
+            <h3 class="font-display text-5xl text-white mt-2 leading-none">
+              CHEF
+              <br>
+              DAN'S
+            </h3>
+            <p class="mt-6 text-sm text-white/90">
+              Our most celebrated creation — ask your server about
+              Chef Dan's signature roll of the season.
+            </p>
+          </div>
+          <div class="relative mt-10 flex items-center justify-between">
+            <span class="font-serif-it text-white/90 text-lg">
+              craft, Red Ginger style
+            </span>
+            <iconify-icon icon="solar:fire-bold" width="32" class="text-white flicker"></iconify-icon>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="py-24 px-4 sm:px-6 relative overflow-hidden">
+      <div class="absolute inset-0 flame-grad opacity-50"></div>
+      <div class="relative max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
+        <div class="">
+          <p class="text-xs uppercase tracking-[0.3em] text-red-500 mb-3">
+            — Visit
+          </p>
+          <h2 class="font-display text-6xl sm:text-8xl text-white tracking-tight leading-[0.85]">
+            COME
+            <br>
+            TASTE
+            <br>
+            <span class="text-red-600">THE CRAFT</span>
+          </h2>
+          <p class="mt-6 max-w-md text-sm text-white/65">
+            Red Ginger awaits in Traverse City. Sushi, small plates, and bold
+            Asian mains — crafted nightly with the freshest ingredients.
+          </p>
+          <div class="mt-10 flex flex-wrap gap-3">
+            <a href="tel:2319441733" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-sm uppercase tracking-widest font-semibold px-6 py-3.5 rounded-xl">
+              <iconify-icon icon="solar:phone-linear" width="18"></iconify-icon>
+              Call us
+            </a>
+            <a href="#" class="inline-flex items-center gap-2 border border-white/20 hover:bg-white/5 transition text-white text-sm uppercase tracking-widest font-semibold px-6 py-3.5 rounded-xl">
+              <iconify-icon icon="solar:instagram-linear" width="18"></iconify-icon>
+              @eatatginger
+            </a>
+          </div>
+        </div>
+
+        <div class="bg-black/60 backdrop-blur border border-white/10 rounded-2xl p-8 sm:p-10">
+          <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=900&q=80" alt="Red Ginger sushi" class="w-full aspect-[16/9] object-cover rounded-xl border border-white/10 mb-8">
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <p class="text-xs uppercase tracking-[0.3em] text-white/40 mb-2">
+                Address
+              </p>
+              <p class="text-white text-sm leading-relaxed">
+                Traverse City
+                <br>
+                Michigan, USA
+              </p>
+            </div>
+            <div>
+              <p class="text-xs uppercase tracking-[0.3em] text-white/40 mb-2">
+                Hours
+              </p>
+              <p class="text-white text-sm leading-relaxed">
+                Tue — Sat
+                <br>
+                4:00 — 22:00
+              </p>
+            </div>
+            <div>
+              <p class="text-xs uppercase tracking-[0.3em] text-white/40 mb-2">
+                Phone
+              </p>
+              <p class="text-white text-sm">(231) 944-1733</p>
+            </div>
+            <div>
+              <p class="text-xs uppercase tracking-[0.3em] text-white/40 mb-2">
+                Service
+              </p>
+              <p class="text-white text-sm">Dine-in · Takeout</p>
+            </div>
+          </div>
+          <div class="mt-8 pt-8 border-t border-white/10 flex items-center justify-between">
+            <span class="font-serif-it text-white/60 text-lg">
+              Sushi · Craft · Repeat
+            </span>
+            <iconify-icon icon="solar:fire-bold" class="text-red-600 flicker" width="32"></iconify-icon>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-black border-t border-white/10 px-4 sm:px-6 py-10">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div class="flex items-center">
+          <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-10 w-auto">
+        </div>
+        <p class="text-xs uppercase tracking-widest text-white/40">
+          © 2024 Red Ginger · Traverse City, MI
+        </p>
+        <div class="flex items-center gap-3">
+          <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+            <iconify-icon icon="solar:instagram-linear" width="18"></iconify-icon>
+          </a>
+          <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+            <iconify-icon icon="solar:tiktok-linear" width="18"></iconify-icon>
+          </a>
+          <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+            <iconify-icon icon="solar:facebook-linear" width="18"></iconify-icon>
+          </a>
+        </div>
+      </div>
+    </footer>
+  
+
+  <script>
+  (function () {
+
+    /* ===================== CUSTOM CURSOR ===================== */
+    var dot  = document.getElementById('c-dot');
+    var ring = document.getElementById('c-ring');
+    var mx = -100, my = -100, rx = -100, ry = -100;
+
+    document.addEventListener('mousemove', function (e) {
+      mx = e.clientX; my = e.clientY;
+      dot.style.transform = 'translate(' + (mx - 4) + 'px,' + (my - 4) + 'px)';
+    });
+    (function ringLoop() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.transform = 'translate(' + (rx - 19) + 'px,' + (ry - 19) + 'px)';
+      requestAnimationFrame(ringLoop);
+    })();
+    document.querySelectorAll('a, button').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { document.body.classList.add('cursor-hover'); });
+      el.addEventListener('mouseleave', function () { document.body.classList.remove('cursor-hover'); });
+    });
+
+    /* ===================== FIRE EMBERS (CANVAS) ===================== */
+    var canvas = document.getElementById('ember-canvas');
+    var ctx    = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function Ember() { this.reset(true); }
+    Ember.prototype.reset = function (scatter) {
+      this.x = Math.random() * canvas.width;
+      this.y = scatter ? Math.random() * canvas.height : canvas.height + 10;
+      this.vx = (Math.random() - 0.5) * 0.7;
+      this.vy = -(Math.random() * 2.2 + 0.6);
+      this.r  = Math.random() * 2.5 + 0.4;
+      this.life  = scatter ? Math.random() : 1;
+      this.decay = Math.random() * 0.004 + 0.002;
+      this.warm  = Math.random() > 0.45;
+    };
+    Ember.prototype.tick = function () {
+      this.x += this.vx + Math.sin(Date.now() * 0.001 + this.x * 0.008) * 0.3;
+      this.y += this.vy;
+      this.life -= this.decay;
+      if (this.life <= 0 || this.y < -20) this.reset(false);
+    };
+    Ember.prototype.draw = function () {
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, this.life) * 0.75;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle   = this.warm ? '#f97316' : '#ef4444';
+      ctx.shadowBlur  = 12;
+      ctx.shadowColor = this.warm ? '#f97316' : '#ef4444';
+      ctx.fill();
+      ctx.restore();
+    };
+    var embers = [];
+    for (var i = 0; i < 80; i++) embers.push(new Ember());
+    (function emberLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var j = 0; j < embers.length; j++) { embers[j].tick(); embers[j].draw(); }
+      requestAnimationFrame(emberLoop);
+    })();
+
+    /* ===================== SCROLL REVEAL ===================== */
+    /* mark elements to reveal */
+    var revealTargets = [];
+
+    /* section headings */
+    document.querySelectorAll('section h2').forEach(function (el) {
+      el.classList.add('reveal-me');
+      revealTargets.push(el);
+    });
+    /* feature dish cards */
+    document.querySelectorAll('.grid.md\\:grid-cols-3 > div').forEach(function (el, i) {
+      el.classList.add('reveal-me');
+      if (i % 3 === 0) el.classList.add('from-left');
+      if (i % 3 === 2) el.classList.add('from-right');
+      revealTargets.push(el);
+    });
+    /* menu style cards */
+    document.querySelectorAll('.grid.md\\:grid-cols-3.gap-5 > div').forEach(function (el, i) {
+      el.classList.add('reveal-me', 'scale-in');
+      revealTargets.push(el);
+    });
+    /* sushi list rows */
+    document.querySelectorAll('.space-y-3 > div').forEach(function (el, i) {
+      el.classList.add('reveal-me');
+      el.style.transitionDelay = (i * 80) + 'ms';
+      revealTargets.push(el);
+    });
+    /* occasion mosaic cards */
+    document.querySelectorAll('.grid.grid-cols-2 > div').forEach(function (el, i) {
+      el.classList.add('reveal-me', 'scale-in');
+      el.style.transitionDelay = (i * 70) + 'ms';
+      revealTargets.push(el);
+    });
+    /* pricing strip */
+    document.querySelectorAll('.mt-8.grid.sm\\:grid-cols-3 > div').forEach(function (el, i) {
+      el.classList.add('reveal-me');
+      el.style.transitionDelay = (i * 100) + 'ms';
+      revealTargets.push(el);
+    });
+    /* chef section columns */
+    var chefCols = document.querySelectorAll('.grid.lg\\:grid-cols-2.gap-16 > div');
+    if (chefCols[0]) { chefCols[0].classList.add('reveal-me', 'from-left'); revealTargets.push(chefCols[0]); }
+    if (chefCols[1]) { chefCols[1].classList.add('reveal-me', 'from-right'); revealTargets.push(chefCols[1]); }
+
+    var revealObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px 60px 0px' });
+
+    revealTargets.forEach(function (el) { revealObs.observe(el); });
+
+    /* fallback: reveal everything after 1.5s */
+    setTimeout(function () {
+      revealTargets.forEach(function (el) { el.classList.add('revealed'); });
+    }, 1500);
+
+    /* ===================== STAT COUNTERS ===================== */
+    function animateCount(el, target, suffix, duration) {
+      var start = 0;
+      var startTime = null;
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        var p = Math.min((ts - startTime) / duration, 1);
+        var ease = 1 - Math.pow(1 - p, 3);
+        el.firstChild.textContent = Math.round(ease * target) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    var countObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        var raw = el.getAttribute('data-count');
+        var suffix = el.getAttribute('data-suffix') || '';
+        animateCount(el, parseFloat(raw), suffix, 1200);
+        countObs.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+
+    /* attach data-count to hero stats */
+    var heroStats = [
+      { sel: null, val: '16', suf: '+' },
+      { sel: null, val: '100', suf: '%' },
+      { sel: null, val: '4', suf: '×' }
+    ];
+    document.querySelectorAll('.grid.grid-cols-3.gap-4 p.font-display').forEach(function (p, i) {
+      if (!heroStats[i]) return;
+      p.setAttribute('data-count', heroStats[i].val);
+      p.setAttribute('data-suffix', heroStats[i].suf);
+      /* wrap text node so we can update just the number part */
+      var span = document.createElement('span');
+      span.textContent = p.firstChild ? p.firstChild.textContent.trim() : heroStats[i].val;
+      if (p.firstChild && p.firstChild.nodeType === 3) p.removeChild(p.firstChild);
+      p.insertBefore(span, p.firstChild);
+      countObs.observe(p);
+    });
+    /* chef section stats */
+    var chefVals = ['50', '3', '1'];
+    var chefSufs = ['+', '', ''];
+    document.querySelectorAll('.grid.grid-cols-3.gap-6 p.font-display').forEach(function (p, i) {
+      if (chefVals[i] === undefined) return;
+      p.setAttribute('data-count', chefVals[i]);
+      p.setAttribute('data-suffix', chefSufs[i]);
+      var span = document.createElement('span');
+      span.textContent = p.textContent.trim();
+      p.textContent = '';
+      p.appendChild(span);
+      countObs.observe(p);
+    });
+
+    /* ===================== 3-D TILT ON FEATURE CARDS ===================== */
+    document.querySelectorAll('.group.relative.rounded-2xl.overflow-hidden.aspect-\\[3\\/4\\]').forEach(function (card) {
+      card.addEventListener('mousemove', function (e) {
+        var r  = card.getBoundingClientRect();
+        var dx = (e.clientX - r.left - r.width  / 2) / (r.width  / 2);
+        var dy = (e.clientY - r.top  - r.height / 2) / (r.height / 2);
+        card.style.transition = 'transform .08s ease';
+        card.style.transform  = 'perspective(700px) rotateY(' + (dx * 8) + 'deg) rotateX(' + (-dy * 8) + 'deg) scale(1.03)';
+        card.style.zIndex     = '10';
+      });
+      card.addEventListener('mouseleave', function () {
+        card.style.transition = 'transform .5s cubic-bezier(.22,1,.36,1)';
+        card.style.transform  = '';
+        card.style.zIndex     = '';
+      });
+    });
+
+    /* ===================== MAGNETIC CTA BUTTONS ===================== */
+    document.querySelectorAll('a.inline-flex, button.inline-flex').forEach(function (btn) {
+      btn.style.position = 'relative';
+      btn.addEventListener('mousemove', function (e) {
+        var r  = btn.getBoundingClientRect();
+        var dx = e.clientX - (r.left + r.width  / 2);
+        var dy = e.clientY - (r.top  + r.height / 2);
+        btn.style.transform  = 'translate(' + (dx * 0.22) + 'px,' + (dy * 0.22) + 'px)';
+        btn.style.transition = 'transform .08s ease';
+      });
+      btn.addEventListener('mouseleave', function () {
+        btn.style.transition = 'transform .5s cubic-bezier(.34,1.56,.64,1)';
+        btn.style.transform  = '';
+      });
+    });
+
+/* ===================== RIPPLE ON PRIMARY BUTTONS ===================== */
+    document.querySelectorAll('a.bg-red-600, button.bg-red-600').forEach(function (btn) {
+      btn.style.overflow = 'hidden';
+      btn.addEventListener('click', function (e) {
+        var wave = document.createElement('span');
+        var r    = btn.getBoundingClientRect();
+        var size = Math.max(r.width, r.height) * 2.5;
+        wave.className    = 'ripple-wave';
+        wave.style.cssText = 'width:' + size + 'px;height:' + size + 'px;'
+          + 'left:' + (e.clientX - r.left - size / 2) + 'px;'
+          + 'top:'  + (e.clientY - r.top  - size / 2) + 'px;';
+        btn.appendChild(wave);
+        setTimeout(function () { wave.remove(); }, 700);
+      });
+    });
+
+  })();
+  </script>
+</body></html>

@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reserve — RED GINGER · Traverse City, MI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'DM Sans', sans-serif; background:#0b0708; color:#f4ede4; }
+  .font-display  { font-family: 'Bebas Neue', sans-serif; letter-spacing: -0.01em; }
+  .font-serif-it { font-family: 'Instrument Serif', serif; font-style: italic; }
+  .grain { background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 3px 3px; }
+  .flame-grad { background: radial-gradient(ellipse at 50% 100%, rgba(232,65,24,0.55) 0%, rgba(232,65,24,0.15) 35%, transparent 70%); }
+
+  @keyframes scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .animate-marquee { animation: scroll 30s linear infinite; }
+
+  @keyframes flicker { 0%,100%{opacity:.85;transform:scale(1)} 50%{opacity:1;transform:scale(1.04)} }
+  .flicker { animation: flicker 2.4s ease-in-out infinite; }
+
+  @keyframes rise { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .rise { animation: rise .8s ease-out both; }
+
+  /* CURSOR */
+  body { cursor:none; }
+  #c-dot,#c-ring { position:fixed;top:0;left:0;border-radius:50%;pointer-events:none;z-index:9999;will-change:transform; }
+  #c-dot { width:8px;height:8px;background:#dc2626;box-shadow:0 0 12px #dc2626,0 0 28px rgba(220,38,38,.5); }
+  #c-ring { width:38px;height:38px;border:1.5px solid rgba(220,38,38,.55);transition:width .22s,height .22s,border-color .22s; }
+  .cursor-hover #c-ring { width:56px;height:56px;border-color:#dc2626;box-shadow:0 0 14px rgba(220,38,38,.5); }
+
+  /* EMBER CANVAS */
+  #ember-canvas { position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;opacity:.4; }
+
+  /* SCANLINES */
+  .scanlines { position:fixed;inset:0;pointer-events:none;z-index:9997;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px); }
+
+  /* NAV BREATHE */
+  header nav { animation:nav-breathe 4s ease-in-out infinite; }
+  @keyframes nav-breathe { 0%,100%{box-shadow:0 8px 32px rgba(0,0,0,.6);}50%{box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(220,38,38,.15);} }
+
+  /* SCROLL REVEAL */
+  .reveal-me { opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1); }
+  .reveal-me.from-left { transform:translateX(-40px); }
+  .reveal-me.from-right { transform:translateX(40px); }
+  .reveal-me.revealed { opacity:1!important;transform:none!important; }
+
+  /* RIPPLE */
+  .ripple-wave { position:absolute;border-radius:50%;background:rgba(255,255,255,.2);transform:scale(0);animation:ripple-go .65s ease-out forwards;pointer-events:none; }
+  @keyframes ripple-go { to{transform:scale(4);opacity:0;} }
+
+  /* FORM INPUTS */
+  .field {
+    width:100%;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:12px;
+    padding:14px 18px;
+    color:#f4ede4;
+    font-family:'DM Sans',sans-serif;
+    font-size:14px;
+    outline:none;
+    transition:border-color .2s, background .2s, box-shadow .2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .field::placeholder { color:rgba(255,255,255,0.3); }
+  .field:focus {
+    border-color:rgba(220,38,38,0.7);
+    background:rgba(220,38,38,0.06);
+    box-shadow:0 0 0 3px rgba(220,38,38,0.12);
+  }
+  .field option { background:#1a0a0a; color:#f4ede4; }
+
+  /* OCCASION CARDS */
+  .occ-card {
+    position:relative;
+    border:1.5px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    padding:20px 18px;
+    cursor:pointer;
+    transition:border-color .2s, background .2s, transform .2s;
+    background:rgba(255,255,255,0.03);
+    text-align:center;
+    user-select:none;
+  }
+  .occ-card:hover { border-color:rgba(220,38,38,0.5); background:rgba(220,38,38,0.05); transform:translateY(-2px); }
+  .occ-card.active { border-color:#dc2626; background:rgba(220,38,38,0.1); box-shadow:0 0 0 1px #dc2626,0 8px 32px rgba(220,38,38,0.15); }
+  .occ-card .check { position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;transition:.2s; }
+  .occ-card.active .check { background:#dc2626;border-color:#dc2626; }
+
+  /* STEP INDICATOR */
+  .step-dot { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);transition:background .3s,transform .3s; }
+  .step-dot.active { background:#dc2626;transform:scale(1.4); }
+  .step-dot.done { background:rgba(220,38,38,0.5); }
+
+  /* TOGGLE SLIDER */
+  .toggle-track { width:44px;height:24px;background:rgba(255,255,255,0.1);border-radius:12px;position:relative;cursor:pointer;transition:background .2s;border:1px solid rgba(255,255,255,0.15); }
+  .toggle-track.on { background:#dc2626; border-color:#dc2626; }
+  .toggle-thumb { position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s,box-shadow .2s;box-shadow:0 1px 4px rgba(0,0,0,0.4); }
+  .toggle-track.on .toggle-thumb { left:23px; }
+
+  /* PARTY SIZE PICKER */
+  .size-btn { width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;color:rgba(255,255,255,0.7);font-size:20px;user-select:none; }
+  .size-btn:hover { border-color:#dc2626;color:#fff;background:rgba(220,38,38,0.1); }
+
+  /* TIME SLOTS */
+  .time-slot { padding:9px 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.1);font-size:13px;font-weight:500;cursor:pointer;transition:.2s;color:rgba(255,255,255,0.65);text-align:center; }
+  .time-slot:hover { border-color:rgba(220,38,38,0.5);color:#fff;background:rgba(220,38,38,0.07); }
+  .time-slot.selected { border-color:#dc2626;background:rgba(220,38,38,0.15);color:#fff;box-shadow:0 0 0 1px #dc2626; }
+  .time-slot.unavailable { opacity:0.3;cursor:not-allowed;pointer-events:none; }
+
+  /* CALENDAR */
+  .cal-day { width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:.2s;color:rgba(255,255,255,0.65); }
+  .cal-day:hover:not(.empty):not(.past) { background:rgba(220,38,38,0.15);color:#fff; }
+  .cal-day.selected { background:#dc2626;color:#fff;box-shadow:0 0 12px rgba(220,38,38,0.4); }
+  .cal-day.today { border:1.5px solid rgba(220,38,38,0.4);color:#f97316; }
+  .cal-day.past { opacity:0.25;cursor:not-allowed; }
+  .cal-day.empty { cursor:default; }
+
+  /* SUMMARY CARD */
+  .summary-row { display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.07); }
+  .summary-row:last-child { border-bottom:none; }
+
+  /* FLAME PULSE on section decor */
+  @keyframes flame-pulse { 0%,100%{opacity:.7;}50%{opacity:1;} }
+  .flame-pulse { animation: flame-pulse 3s ease-in-out infinite; }
+
+  /* Hero line animation */
+  @keyframes slide-in-right { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+  .slide-in-r { animation: slide-in-right .9s cubic-bezier(.22,1,.36,1) both; }
+
+  /* Success overlay */
+  #success-overlay { display:none; }
+  #success-overlay.show { display:flex; }
+  @keyframes scale-in { from{opacity:0;transform:scale(.85)} to{opacity:1;transform:scale(1)} }
+  .scale-in-anim { animation: scale-in .5s cubic-bezier(.34,1.56,.64,1) both; }
+</style>
+</head>
+<body class="antialiased overflow-x-hidden selection:bg-red-600 selection:text-white">
+
+  <canvas id="ember-canvas"></canvas>
+  <div id="c-dot"></div>
+  <div id="c-ring"></div>
+  <div class="scanlines"></div>
+
+  <!-- SUCCESS OVERLAY -->
+  <div id="success-overlay" class="fixed inset-0 z-[9998] bg-black/80 backdrop-blur-md flex items-center justify-center px-4">
+    <div class="scale-in-anim bg-neutral-950 border border-white/10 rounded-3xl p-10 max-w-md w-full text-center relative overflow-hidden">
+      <div class="absolute inset-0 grain opacity-30"></div>
+      <div class="absolute inset-x-0 bottom-0 h-1/2 flame-grad opacity-60 pointer-events-none"></div>
+      <div class="relative">
+        <div class="w-20 h-20 rounded-full bg-red-600/20 border border-red-600/40 flex items-center justify-center mx-auto mb-6">
+          <iconify-icon icon="solar:check-circle-bold" class="text-red-400" width="40"></iconify-icon>
+        </div>
+        <p class="font-serif-it text-red-400 text-lg mb-1">You're confirmed —</p>
+        <h3 class="font-display text-5xl text-white leading-none mb-4">RESERVATION<br>RECEIVED</h3>
+        <p class="text-white/60 text-sm leading-relaxed mb-8">We'll send a confirmation to your email within minutes. We can't wait to welcome you to Red Ginger.</p>
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-5 text-left space-y-3 mb-8">
+          <div class="flex justify-between text-sm">
+            <span class="text-white/50">Type</span>
+            <span class="text-white font-medium" id="conf-type">—</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-white/50">Date</span>
+            <span class="text-white font-medium" id="conf-date">—</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-white/50">Time</span>
+            <span class="text-white font-medium" id="conf-time">—</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-white/50">Guests</span>
+            <span class="text-white font-medium" id="conf-guests">—</span>
+          </div>
+        </div>
+        <a href="index.html" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-xs font-semibold uppercase tracking-widest px-8 py-3.5 rounded-xl w-full justify-center">
+          Back to Home
+          <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <header class="fixed top-3 inset-x-0 z-50 px-3 sm:px-6 flex justify-center">
+    <nav class="w-full max-w-7xl bg-black/80 backdrop-blur border border-white/10 rounded-xl px-4 sm:px-6 py-3 flex items-center justify-between shadow-2xl">
+      <a href="index.html" class="flex items-center">
+        <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-10 w-auto">
+      </a>
+      <div class="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest text-white/70">
+        <a href="index.html#burgers" class="hover:text-white transition">Small Plates</a>
+        <a href="index.html#hotdogs" class="hover:text-white transition">Sushi</a>
+        <a href="menu.html" class="hover:text-white transition">Menu</a>
+        <a href="index.html#contact" class="hover:text-white transition">Contact</a>
+      </div>
+      <span class="inline-flex items-center gap-2 bg-red-600 text-white text-xs uppercase tracking-widest font-semibold px-4 py-2 rounded-lg opacity-80">
+        Reserve
+        <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+      </span>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="relative pt-36 pb-16 overflow-hidden">
+    <div class="absolute inset-0 grain opacity-50"></div>
+    <div class="absolute inset-x-0 bottom-0 h-2/3 flame-grad pointer-events-none"></div>
+    <!-- Red glow -->
+    <div class="absolute right-0 top-0 w-[600px] h-[600px] bg-red-700/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="max-w-3xl">
+        <div class="flex items-center gap-3 mb-6 rise">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-500 flicker"></span>
+          <span class="text-xs uppercase tracking-[0.3em] text-white/50">Traverse City · MI</span>
+          <span class="text-white/20">·</span>
+          <span class="text-xs uppercase tracking-[0.3em] text-white/50">Tue – Sat · 4:00 — 22:00</span>
+        </div>
+        <p class="font-serif-it text-red-400 text-xl sm:text-2xl mb-4 rise" style="animation-delay:.1s">Secure your seat —</p>
+        <h1 class="font-display text-white leading-[0.85] tracking-tight rise" style="font-size:clamp(64px,12vw,160px);animation-delay:.15s">
+          MAKE A<br>
+          <span class="text-red-600">RESERVATION</span>
+        </h1>
+        <p class="mt-6 text-white/55 text-sm sm:text-base max-w-xl rise" style="animation-delay:.25s">
+          Whether it's a quiet dinner for two, a private celebration, or a full-scale event — we'll craft something extraordinary around you.
+        </p>
+      </div>
+
+      <!-- Quick info pills -->
+      <div class="mt-10 flex flex-wrap gap-3 rise" style="animation-delay:.35s">
+        <span class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs text-white/65">
+          <iconify-icon icon="solar:users-group-rounded-linear" width="14" class="text-red-400"></iconify-icon>
+          Groups up to 50
+        </span>
+        <span class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs text-white/65">
+          <iconify-icon icon="solar:calendar-linear" width="14" class="text-red-400"></iconify-icon>
+          Book up to 60 days ahead
+        </span>
+        <span class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs text-white/65">
+          <iconify-icon icon="solar:phone-linear" width="14" class="text-red-400"></iconify-icon>
+          (231) 944-1733
+        </span>
+        <span class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs text-white/65">
+          <iconify-icon icon="solar:star-bold" width="14" class="text-red-400"></iconify-icon>
+          4.9 rating · 200+ reviews
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE DIVIDER -->
+  <div class="border-y border-white/10 bg-black overflow-hidden py-4 relative z-10">
+    <div class="flex animate-marquee whitespace-nowrap">
+      <div class="flex items-center gap-8 px-5 font-display text-3xl text-white/80">
+        <span>DINE IN</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>PRIVATE EVENTS</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>DATE NIGHT</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>CELEBRATIONS</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>PROPOSALS</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>BIRTHDAYS</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>ANNIVERSARIES</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+      </div>
+      <div class="flex items-center gap-8 px-5 font-display text-3xl text-white/80">
+        <span>DINE IN</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>PRIVATE EVENTS</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>DATE NIGHT</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>CELEBRATIONS</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>PROPOSALS</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>BIRTHDAYS</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+        <span>ANNIVERSARIES</span>
+        <iconify-icon icon="solar:fire-bold" class="text-red-600" width="22"></iconify-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <section class="py-20 px-4 sm:px-6 relative z-10">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid lg:grid-cols-3 gap-10 items-start">
+
+        <!-- ============ FORM PANEL ============ -->
+        <div class="lg:col-span-2 space-y-8">
+
+          <!-- STEP 1: Occasion Type -->
+          <div class="reveal-me bg-neutral-950/80 border border-white/10 rounded-3xl p-8 sm:p-10 relative overflow-hidden" id="step-1">
+            <div class="absolute inset-0 grain opacity-20"></div>
+            <div class="relative">
+              <!-- Step label -->
+              <div class="flex items-center gap-3 mb-8">
+                <span class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-sm shrink-0">1</span>
+                <div>
+                  <p class="text-xs uppercase tracking-widest text-red-400">Step 1 of 3</p>
+                  <h2 class="font-display text-3xl text-white leading-none mt-0.5">CHOOSE YOUR OCCASION</h2>
+                </div>
+              </div>
+
+              <!-- Occasion cards grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="occasion-grid">
+
+                <div class="occ-card active" data-occ="dinner" onclick="selectOcc(this)">
+                  <div class="check"><iconify-icon icon="solar:check-linear" width="12" class="text-white"></iconify-icon></div>
+                  <div class="w-12 h-12 rounded-2xl bg-red-600/20 border border-red-600/30 flex items-center justify-center mx-auto mb-3">
+                    <iconify-icon icon="solar:plate-linear" class="text-red-400" width="24"></iconify-icon>
+                  </div>
+                  <h4 class="font-display text-xl text-white leading-tight">DINNER<br>TABLE</h4>
+                  <p class="text-[11px] text-white/45 mt-1.5 leading-snug">Standard dining reservation</p>
+                </div>
+
+                <div class="occ-card" data-occ="date" onclick="selectOcc(this)">
+                  <div class="check"><iconify-icon icon="solar:check-linear" width="12" class="text-white"></iconify-icon></div>
+                  <div class="w-12 h-12 rounded-2xl bg-pink-600/20 border border-pink-600/30 flex items-center justify-center mx-auto mb-3">
+                    <iconify-icon icon="solar:heart-bold" class="text-pink-400" width="24"></iconify-icon>
+                  </div>
+                  <h4 class="font-display text-xl text-white leading-tight">DATE<br>NIGHT</h4>
+                  <p class="text-[11px] text-white/45 mt-1.5 leading-snug">Romantic candlelit setting</p>
+                </div>
+
+                <div class="occ-card" data-occ="proposal" onclick="selectOcc(this)">
+                  <div class="check"><iconify-icon icon="solar:check-linear" width="12" class="text-white"></iconify-icon></div>
+                  <div class="w-12 h-12 rounded-2xl bg-amber-600/20 border border-amber-600/30 flex items-center justify-center mx-auto mb-3">
+                    <iconify-icon icon="solar:diamond-bold" class="text-amber-400" width="24"></iconify-icon>
+                  </div>
+                  <h4 class="font-display text-xl text-white leading-tight">PROPOSAL<br>PACKAGE</h4>
+                  <p class="text-[11px] text-white/45 mt-1.5 leading-snug">Make it unforgettable</p>
+                </div>
+
+                <div class="occ-card" data-occ="birthday" onclick="selectOcc(this)">
+                  <div class="check"><iconify-icon icon="solar:check-linear" width="12" class="text-white"></iconify-icon></div>
+                  <div class="w-12 h-12 rounded-2xl bg-violet-600/20 border border-violet-600/30 flex items-center justify-center mx-auto mb-3">
+                    <iconify-icon icon="solar:gift-bold" class="text-violet-400" width="24"></iconify-icon>
+                  </div>
+                  <h4 class="font-display text-xl text-white leading-tight">BIRTHDAY<br>CELEBRATION</h4>
+                  <p class="text-[11px] text-white/45 mt-1.5 leading-snug">Birthdays done right</p>
+                </div>
+
+                <div class="occ-card" data-occ="anniversary" onclick="selectOcc(this)">
+                  <div class="check"><iconify-icon icon="solar:check-linear" width="12" class="text-white"></iconify-icon></div>
+                  <div class="w-12 h-12 rounded-2xl bg-teal-600/20 border border-teal-600/30 flex items-center justify-center mx-auto mb-3">
+                    <iconify-icon icon="solar:medal-ribbons-star-bold" class="text-teal-400" width="24"></iconify-icon>
+                  </div>
+                  <h4 class="font-display text-xl text-white leading-tight">ANNIVERSARY</h4>
+                  <p class="text-[11px] text-white/45 mt-1.5 leading-snug">Celebrate your journey</p>
+                </div>
+
+                <div class="occ-card" data-occ="event" onclick="selectOcc(this)">
+                  <div class="check"><iconify-icon icon="solar:check-linear" width="12" class="text-white"></iconify-icon></div>
+                  <div class="w-12 h-12 rounded-2xl bg-orange-600/20 border border-orange-600/30 flex items-center justify-center mx-auto mb-3">
+                    <iconify-icon icon="solar:users-group-rounded-bold" class="text-orange-400" width="24"></iconify-icon>
+                  </div>
+                  <h4 class="font-display text-xl text-white leading-tight">PRIVATE<br>EVENT</h4>
+                  <p class="text-[11px] text-white/45 mt-1.5 leading-snug">Groups · Buyouts · Corporate</p>
+                </div>
+
+              </div>
+
+              <!-- Occasion-specific note -->
+              <div id="occ-note" class="mt-6 flex items-start gap-3 bg-red-600/10 border border-red-600/20 rounded-xl px-5 py-4 text-sm text-white/70">
+                <iconify-icon icon="solar:info-circle-linear" class="text-red-400 shrink-0 mt-0.5" width="18"></iconify-icon>
+                <span id="occ-note-text">Standard table reservation — choose your preferred date, time, and party size below.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: Date, Time & Guests -->
+          <div class="reveal-me bg-neutral-950/80 border border-white/10 rounded-3xl p-8 sm:p-10 relative overflow-hidden" id="step-2">
+            <div class="absolute inset-0 grain opacity-20"></div>
+            <div class="relative">
+              <div class="flex items-center gap-3 mb-8">
+                <span class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-sm shrink-0">2</span>
+                <div>
+                  <p class="text-xs uppercase tracking-widest text-red-400">Step 2 of 3</p>
+                  <h2 class="font-display text-3xl text-white leading-none mt-0.5">DATE · TIME · GUESTS</h2>
+                </div>
+              </div>
+
+              <!-- Mini calendar -->
+              <div class="mb-8">
+                <p class="text-xs uppercase tracking-widest text-white/50 mb-4">Select a Date</p>
+                <div class="bg-black/40 border border-white/10 rounded-2xl p-5">
+                  <!-- Calendar header -->
+                  <div class="flex items-center justify-between mb-5">
+                    <button onclick="calPrev()" class="w-9 h-9 rounded-full border border-white/10 hover:border-red-500 hover:bg-red-600/20 transition flex items-center justify-center text-white/60 hover:text-white">
+                      <iconify-icon icon="solar:arrow-left-linear" width="16"></iconify-icon>
+                    </button>
+                    <span id="cal-month-label" class="font-display text-xl text-white tracking-wide"></span>
+                    <button onclick="calNext()" class="w-9 h-9 rounded-full border border-white/10 hover:border-red-500 hover:bg-red-600/20 transition flex items-center justify-center text-white/60 hover:text-white">
+                      <iconify-icon icon="solar:arrow-right-linear" width="16"></iconify-icon>
+                    </button>
+                  </div>
+                  <!-- Weekday headers -->
+                  <div class="grid grid-cols-7 gap-1 mb-2">
+                    <div class="text-center text-[11px] text-white/30 uppercase tracking-wider py-1">Su</div>
+                    <div class="text-center text-[11px] text-white/30 uppercase tracking-wider py-1">Mo</div>
+                    <div class="text-center text-[11px] text-white/30 uppercase tracking-wider py-1">Tu</div>
+                    <div class="text-center text-[11px] text-white/30 uppercase tracking-wider py-1">We</div>
+                    <div class="text-center text-[11px] text-white/30 uppercase tracking-wider py-1">Th</div>
+                    <div class="text-center text-[11px] text-white/30 uppercase tracking-wider py-1">Fr</div>
+                    <div class="text-center text-[11px] text-white/30 uppercase tracking-wider py-1">Sa</div>
+                  </div>
+                  <!-- Calendar days -->
+                  <div class="grid grid-cols-7 gap-1" id="cal-grid"></div>
+                  <p class="text-[11px] text-white/30 mt-4 flex items-center gap-1.5">
+                    <iconify-icon icon="solar:info-circle-linear" width="13"></iconify-icon>
+                    Restaurant is closed on Sundays &amp; Mondays
+                  </p>
+                </div>
+              </div>
+
+              <!-- Time slots -->
+              <div class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                  <p class="text-xs uppercase tracking-widest text-white/50">Available Times</p>
+                  <span id="selected-date-label" class="text-xs text-red-400 font-medium"></span>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2" id="time-grid">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+
+              <!-- Party size -->
+              <div>
+                <p class="text-xs uppercase tracking-widest text-white/50 mb-4">Party Size</p>
+                <div class="flex items-center gap-5">
+                  <button class="size-btn" onclick="changeSize(-1)">−</button>
+                  <div class="text-center min-w-[80px]">
+                    <span id="party-size-display" class="font-display text-5xl text-white">2</span>
+                    <p class="text-xs text-white/40 mt-1 uppercase tracking-wider">Guests</p>
+                  </div>
+                  <button class="size-btn" onclick="changeSize(1)">+</button>
+                  <div class="ml-4 flex flex-wrap gap-2">
+                    <button onclick="setSize(2)"  class="party-quick px-3 py-1.5 rounded-lg border border-white/10 text-xs text-white/50 hover:border-red-500 hover:text-white transition">2</button>
+                    <button onclick="setSize(4)"  class="party-quick px-3 py-1.5 rounded-lg border border-white/10 text-xs text-white/50 hover:border-red-500 hover:text-white transition">4</button>
+                    <button onclick="setSize(6)"  class="party-quick px-3 py-1.5 rounded-lg border border-white/10 text-xs text-white/50 hover:border-red-500 hover:text-white transition">6</button>
+                    <button onclick="setSize(8)"  class="party-quick px-3 py-1.5 rounded-lg border border-white/10 text-xs text-white/50 hover:border-red-500 hover:text-white transition">8+</button>
+                  </div>
+                </div>
+                <p id="large-party-note" class="hidden mt-4 text-xs text-amber-400 flex items-center gap-1.5">
+                  <iconify-icon icon="solar:info-circle-linear" width="13"></iconify-icon>
+                  For parties of 8+, our events team will reach out to confirm arrangements.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: Contact & Preferences -->
+          <div class="reveal-me bg-neutral-950/80 border border-white/10 rounded-3xl p-8 sm:p-10 relative overflow-hidden" id="step-3">
+            <div class="absolute inset-0 grain opacity-20"></div>
+            <div class="relative">
+              <div class="flex items-center gap-3 mb-8">
+                <span class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-sm shrink-0">3</span>
+                <div>
+                  <p class="text-xs uppercase tracking-widest text-red-400">Step 3 of 3</p>
+                  <h2 class="font-display text-3xl text-white leading-none mt-0.5">YOUR DETAILS</h2>
+                </div>
+              </div>
+
+              <div class="space-y-5">
+                <!-- Name row -->
+                <div class="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs uppercase tracking-widest text-white/50 mb-2">First Name *</label>
+                    <input type="text" id="f-first" class="field" placeholder="Alex">
+                  </div>
+                  <div>
+                    <label class="block text-xs uppercase tracking-widest text-white/50 mb-2">Last Name *</label>
+                    <input type="text" id="f-last" class="field" placeholder="Chen">
+                  </div>
+                </div>
+
+                <!-- Email + Phone -->
+                <div class="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs uppercase tracking-widest text-white/50 mb-2">Email *</label>
+                    <input type="email" id="f-email" class="field" placeholder="alex@example.com">
+                  </div>
+                  <div>
+                    <label class="block text-xs uppercase tracking-widest text-white/50 mb-2">Phone *</label>
+                    <input type="tel" id="f-phone" class="field" placeholder="(231) 000-0000">
+                  </div>
+                </div>
+
+                <!-- Dining preferences -->
+                <div>
+                  <label class="block text-xs uppercase tracking-widest text-white/50 mb-3">Seating Preference</label>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <label class="relative">
+                      <input type="radio" name="seating" value="no-pref" class="sr-only peer" checked>
+                      <div class="occ-card peer-checked:active py-3 px-3 text-sm font-medium text-white/60 peer-checked:text-white peer-checked:border-red-600 peer-checked:bg-red-600/10 cursor-pointer">
+                        <iconify-icon icon="solar:rotate-linear" width="18" class="block mx-auto mb-1 text-white/40"></iconify-icon>
+                        No Pref.
+                      </div>
+                    </label>
+                    <label class="relative">
+                      <input type="radio" name="seating" value="window" class="sr-only peer">
+                      <div class="occ-card peer-checked:active py-3 px-3 text-sm font-medium text-white/60 peer-checked:text-white peer-checked:border-red-600 peer-checked:bg-red-600/10 cursor-pointer">
+                        <iconify-icon icon="solar:home-wifi-linear" width="18" class="block mx-auto mb-1 text-white/40"></iconify-icon>
+                        Window
+                      </div>
+                    </label>
+                    <label class="relative">
+                      <input type="radio" name="seating" value="booth" class="sr-only peer">
+                      <div class="occ-card peer-checked:active py-3 px-3 text-sm font-medium text-white/60 peer-checked:text-white peer-checked:border-red-600 peer-checked:bg-red-600/10 cursor-pointer">
+                        <iconify-icon icon="solar:sofa-linear" width="18" class="block mx-auto mb-1 text-white/40"></iconify-icon>
+                        Booth
+                      </div>
+                    </label>
+                    <label class="relative">
+                      <input type="radio" name="seating" value="bar" class="sr-only peer">
+                      <div class="occ-card peer-checked:active py-3 px-3 text-sm font-medium text-white/60 peer-checked:text-white peer-checked:border-red-600 peer-checked:bg-red-600/10 cursor-pointer">
+                        <iconify-icon icon="solar:cup-hot-linear" width="18" class="block mx-auto mb-1 text-white/40"></iconify-icon>
+                        Sushi Bar
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Toggles -->
+                <div class="grid sm:grid-cols-2 gap-4">
+                  <div class="bg-white/4 border border-white/8 rounded-2xl px-5 py-4 flex items-center justify-between gap-4">
+                    <div>
+                      <p class="text-sm font-medium text-white">Dietary Restrictions</p>
+                      <p class="text-xs text-white/45 mt-0.5">Chef will be informed</p>
+                    </div>
+                    <div class="toggle-track" id="toggle-diet" onclick="toggleSwitch(this)">
+                      <div class="toggle-thumb"></div>
+                    </div>
+                  </div>
+                  <div class="bg-white/4 border border-white/8 rounded-2xl px-5 py-4 flex items-center justify-between gap-4">
+                    <div>
+                      <p class="text-sm font-medium text-white">Add a Cake</p>
+                      <p class="text-xs text-white/45 mt-0.5">House-made mochi cake</p>
+                    </div>
+                    <div class="toggle-track" id="toggle-cake" onclick="toggleSwitch(this)">
+                      <div class="toggle-thumb"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Special requests -->
+                <div>
+                  <label class="block text-xs uppercase tracking-widest text-white/50 mb-2">Special Requests</label>
+                  <textarea id="f-notes" class="field resize-none" rows="4" placeholder="Allergies, celebration details, floral setup, preferred music — anything you'd like us to know..."></textarea>
+                </div>
+
+                <!-- How did you hear -->
+                <div>
+                  <label class="block text-xs uppercase tracking-widest text-white/50 mb-2">How did you hear about us?</label>
+                  <select id="f-source" class="field">
+                    <option value="">Select…</option>
+                    <option>Google</option>
+                    <option>Instagram</option>
+                    <option>TikTok</option>
+                    <option>Friend or Family</option>
+                    <option>Walk-by</option>
+                    <option>Event / Party</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+
+                <!-- Privacy note -->
+                <p class="text-xs text-white/35 leading-relaxed">
+                  By submitting this form you agree to be contacted by Red Ginger regarding your reservation. We don't share your information with third parties.
+                </p>
+
+                <!-- Submit -->
+                <button id="submit-btn" onclick="submitReservation()" class="relative w-full inline-flex items-center justify-center gap-3 bg-red-600 hover:bg-red-500 transition text-white font-semibold uppercase tracking-widest text-sm px-8 py-4 rounded-2xl shadow-lg shadow-red-900/40 overflow-hidden mt-2">
+                  <iconify-icon icon="solar:fire-bold" width="20"></iconify-icon>
+                  Confirm Reservation
+                  <iconify-icon icon="solar:arrow-right-linear" width="18"></iconify-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============ SIDEBAR ============ -->
+        <div class="space-y-6 sticky top-24">
+
+          <!-- Booking summary -->
+          <div class="reveal-me from-right bg-neutral-950/90 border border-white/10 rounded-3xl p-7 relative overflow-hidden">
+            <div class="absolute inset-0 grain opacity-20"></div>
+            <div class="absolute inset-x-0 bottom-0 h-1/2 flame-grad opacity-50 pointer-events-none"></div>
+            <div class="relative">
+              <div class="flex items-center gap-2 mb-6">
+                <iconify-icon icon="solar:document-bold" class="text-red-500" width="20"></iconify-icon>
+                <h3 class="font-display text-2xl text-white leading-none">YOUR BOOKING</h3>
+              </div>
+
+              <div class="space-y-0">
+                <div class="summary-row">
+                  <span class="text-xs uppercase tracking-wider text-white/40">Occasion</span>
+                  <span id="sum-occ" class="text-sm text-white font-medium">Dinner Table</span>
+                </div>
+                <div class="summary-row">
+                  <span class="text-xs uppercase tracking-wider text-white/40">Date</span>
+                  <span id="sum-date" class="text-sm text-white font-medium">Not selected</span>
+                </div>
+                <div class="summary-row">
+                  <span class="text-xs uppercase tracking-wider text-white/40">Time</span>
+                  <span id="sum-time" class="text-sm text-white font-medium">Not selected</span>
+                </div>
+                <div class="summary-row">
+                  <span class="text-xs uppercase tracking-wider text-white/40">Guests</span>
+                  <span id="sum-guests" class="text-sm text-white font-medium">2</span>
+                </div>
+                <div class="summary-row">
+                  <span class="text-xs uppercase tracking-wider text-white/40">Seating</span>
+                  <span id="sum-seat" class="text-sm text-white font-medium">No preference</span>
+                </div>
+              </div>
+
+              <div class="mt-6 bg-red-600/10 border border-red-600/20 rounded-xl px-4 py-3 flex items-start gap-3">
+                <iconify-icon icon="solar:info-circle-linear" class="text-red-400 shrink-0 mt-0.5" width="16"></iconify-icon>
+                <p class="text-xs text-white/60 leading-relaxed">Confirmation sent to your email after booking. Call us to modify: <span class="text-white">(231) 944-1733</span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Restaurant hours -->
+          <div class="reveal-me from-right bg-neutral-950/90 border border-white/10 rounded-3xl p-7 relative overflow-hidden" style="transition-delay:100ms">
+            <div class="absolute inset-0 grain opacity-20"></div>
+            <div class="relative">
+              <div class="flex items-center gap-2 mb-5">
+                <iconify-icon icon="solar:clock-circle-linear" class="text-red-500" width="20"></iconify-icon>
+                <h3 class="font-display text-2xl text-white leading-none">HOURS</h3>
+              </div>
+              <div class="space-y-2.5">
+                <div class="flex justify-between text-sm">
+                  <span class="text-white/40">Mon – Tue</span>
+                  <span class="text-white/30">Closed</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-white/70">Wednesday</span>
+                  <span class="text-white">4:00 – 22:00</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-white/70">Thursday</span>
+                  <span class="text-white">4:00 – 22:00</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-white/70">Friday</span>
+                  <span class="text-white">4:00 – 23:00</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-white/70">Saturday</span>
+                  <span class="text-white">4:00 – 23:00</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-white/70">Sunday</span>
+                  <span class="text-white">4:00 – 21:00</span>
+                </div>
+              </div>
+              <div class="mt-5 pt-5 border-t border-white/10 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-400 shrink-0 animate-pulse"></span>
+                <span class="text-xs text-white/55">Accepting reservations now</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact card -->
+          <div class="reveal-me from-right bg-neutral-950/90 border border-white/10 rounded-3xl p-7 relative overflow-hidden" style="transition-delay:200ms">
+            <div class="absolute inset-0 grain opacity-20"></div>
+            <div class="relative">
+              <div class="flex items-center gap-2 mb-5">
+                <iconify-icon icon="solar:phone-bold" class="text-red-500" width="20"></iconify-icon>
+                <h3 class="font-display text-2xl text-white leading-none">NEED HELP?</h3>
+              </div>
+              <p class="text-sm text-white/55 leading-relaxed mb-5">For same-day bookings, large groups or custom events — call us directly.</p>
+              <a href="tel:2319441733" class="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:border-red-500/50 hover:bg-red-600/10 transition mb-3">
+                <iconify-icon icon="solar:phone-linear" class="text-red-400" width="18"></iconify-icon>
+                <span class="text-white text-sm font-medium">(231) 944-1733</span>
+              </a>
+              <a href="mailto:events@redginger.com" class="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 hover:border-red-500/50 hover:bg-red-600/10 transition">
+                <iconify-icon icon="solar:letter-linear" class="text-red-400" width="18"></iconify-icon>
+                <span class="text-white text-sm font-medium">events@redginger.com</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- What to expect -->
+          <div class="reveal-me from-right bg-red-600 rounded-3xl p-7 relative overflow-hidden" style="transition-delay:300ms">
+            <div class="absolute inset-0 grain opacity-25"></div>
+            <div class="relative">
+              <iconify-icon icon="solar:fire-bold" class="text-white flicker" width="32"></iconify-icon>
+              <h3 class="font-display text-3xl text-white leading-none mt-4 mb-3">WHAT TO<br>EXPECT</h3>
+              <ul class="space-y-2.5">
+                <li class="flex items-start gap-2.5 text-sm text-white/85">
+                  <iconify-icon icon="solar:check-circle-bold" class="text-white/60 shrink-0 mt-0.5" width="16"></iconify-icon>
+                  Confirmation email within minutes
+                </li>
+                <li class="flex items-start gap-2.5 text-sm text-white/85">
+                  <iconify-icon icon="solar:check-circle-bold" class="text-white/60 shrink-0 mt-0.5" width="16"></iconify-icon>
+                  Reminder 24 hrs before your table
+                </li>
+                <li class="flex items-start gap-2.5 text-sm text-white/85">
+                  <iconify-icon icon="solar:check-circle-bold" class="text-white/60 shrink-0 mt-0.5" width="16"></iconify-icon>
+                  Complimentary amuse-bouche on arrival
+                </li>
+                <li class="flex items-start gap-2.5 text-sm text-white/85">
+                  <iconify-icon icon="solar:check-circle-bold" class="text-white/60 shrink-0 mt-0.5" width="16"></iconify-icon>
+                  Celebration requests always honoured
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-black border-t border-white/10 px-4 sm:px-6 py-10 relative z-10">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <a href="index.html" class="flex items-center">
+        <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-10 w-auto">
+      </a>
+      <p class="text-xs uppercase tracking-widest text-white/40">© 2024 Red Ginger · Traverse City, MI</p>
+      <div class="flex items-center gap-3">
+        <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+          <iconify-icon icon="solar:instagram-linear" width="18"></iconify-icon>
+        </a>
+        <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+          <iconify-icon icon="solar:tiktok-linear" width="18"></iconify-icon>
+        </a>
+        <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+          <iconify-icon icon="solar:facebook-linear" width="18"></iconify-icon>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+<script>
+(function () {
+
+  /* ========== CUSTOM CURSOR ========== */
+  var dot  = document.getElementById('c-dot');
+  var ring = document.getElementById('c-ring');
+  var mx = -100, my = -100, rx = -100, ry = -100;
+  document.addEventListener('mousemove', function (e) {
+    mx = e.clientX; my = e.clientY;
+    dot.style.transform = 'translate(' + (mx - 4) + 'px,' + (my - 4) + 'px)';
+  });
+  (function ringLoop() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.transform = 'translate(' + (rx - 19) + 'px,' + (ry - 19) + 'px)';
+    requestAnimationFrame(ringLoop);
+  })();
+  document.querySelectorAll('a, button').forEach(function (el) {
+    el.addEventListener('mouseenter', function () { document.body.classList.add('cursor-hover'); });
+    el.addEventListener('mouseleave', function () { document.body.classList.remove('cursor-hover'); });
+  });
+
+  /* ========== EMBER CANVAS ========== */
+  var canvas = document.getElementById('ember-canvas');
+  var ctx    = canvas.getContext('2d');
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  function Ember() { this.reset(true); }
+  Ember.prototype.reset = function (scatter) {
+    this.x = Math.random() * canvas.width;
+    this.y = scatter ? Math.random() * canvas.height : canvas.height + 10;
+    this.vx = (Math.random() - 0.5) * 0.7;
+    this.vy = -(Math.random() * 2.2 + 0.6);
+    this.r  = Math.random() * 2.2 + 0.4;
+    this.life  = scatter ? Math.random() : 1;
+    this.decay = Math.random() * 0.004 + 0.002;
+    this.warm  = Math.random() > 0.45;
+  };
+  Ember.prototype.tick = function () {
+    this.x += this.vx + Math.sin(Date.now() * 0.001 + this.x * 0.008) * 0.3;
+    this.y += this.vy;
+    this.life -= this.decay;
+    if (this.life <= 0 || this.y < -20) this.reset(false);
+  };
+  Ember.prototype.draw = function () {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.life) * 0.7;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle   = this.warm ? '#f97316' : '#ef4444';
+    ctx.shadowBlur  = 12;
+    ctx.shadowColor = this.warm ? '#f97316' : '#ef4444';
+    ctx.fill();
+    ctx.restore();
+  };
+  var embers = [];
+  for (var i = 0; i < 60; i++) embers.push(new Ember());
+  (function emberLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var j = 0; j < embers.length; j++) { embers[j].tick(); embers[j].draw(); }
+    requestAnimationFrame(emberLoop);
+  })();
+
+  /* ========== SCROLL REVEAL ========== */
+  var revealTargets = document.querySelectorAll('.reveal-me');
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.06, rootMargin: '0px 0px 40px 0px' });
+  revealTargets.forEach(function (el) { obs.observe(el); });
+  setTimeout(function () { revealTargets.forEach(function (el) { el.classList.add('revealed'); }); }, 1500);
+
+  /* ========== MAGNETIC BUTTONS ========== */
+  document.querySelectorAll('a.inline-flex, button.inline-flex, button#submit-btn').forEach(function (btn) {
+    btn.style.position = 'relative';
+    btn.addEventListener('mousemove', function (e) {
+      var r  = btn.getBoundingClientRect();
+      var dx = e.clientX - (r.left + r.width  / 2);
+      var dy = e.clientY - (r.top  + r.height / 2);
+      btn.style.transform  = 'translate(' + (dx * 0.18) + 'px,' + (dy * 0.18) + 'px)';
+      btn.style.transition = 'transform .08s ease';
+    });
+    btn.addEventListener('mouseleave', function () {
+      btn.style.transition = 'transform .5s cubic-bezier(.34,1.56,.64,1)';
+      btn.style.transform  = '';
+    });
+  });
+
+  /* ========== RIPPLE ON RED BUTTONS ========== */
+  document.querySelectorAll('#submit-btn, a.bg-red-600').forEach(function (btn) {
+    btn.style.overflow = 'hidden';
+    btn.addEventListener('click', function (e) {
+      var wave = document.createElement('span');
+      var r    = btn.getBoundingClientRect();
+      var size = Math.max(r.width, r.height) * 2.5;
+      wave.className = 'ripple-wave';
+      wave.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+(e.clientX-r.left-size/2)+'px;top:'+(e.clientY-r.top-size/2)+'px;';
+      btn.appendChild(wave);
+      setTimeout(function () { wave.remove(); }, 700);
+    });
+  });
+
+})();
+
+/* ========== OCCASION SELECTOR ========== */
+var occNotes = {
+  dinner:      'Standard table reservation — choose your preferred date, time, and party size below.',
+  date:        'We\'ll prepare a candlelit table with roses and a personalised welcome card. Let us know any extras in the notes.',
+  proposal:    'Our team will coordinate florals, a personified menu, and the perfect moment. We keep it discreet until you\'re ready. 💍',
+  birthday:    'We\'ll arrange a birthday banner, cake delivery, and a surprise serenade from the kitchen team — just tell us the name!',
+  anniversary: 'A bottle of complimentary sake on us, plus our chef\'s tasting menu pairing available on request.',
+  event:       'For groups or full buyouts, our events manager will call you within 24 hours to finalise the details. Capacity up to 50 guests.'
+};
+var occLabels = {
+  dinner: 'Dinner Table', date: 'Date Night', proposal: 'Proposal Package',
+  birthday: 'Birthday Celebration', anniversary: 'Anniversary', event: 'Private Event'
+};
+
+function selectOcc(card) {
+  document.querySelectorAll('.occ-card').forEach(function (c) { c.classList.remove('active'); });
+  card.classList.add('active');
+  var occ = card.getAttribute('data-occ');
+  document.getElementById('occ-note-text').textContent = occNotes[occ];
+  document.getElementById('sum-occ').textContent = occLabels[occ];
+}
+
+/* ========== TOGGLE ========== */
+function toggleSwitch(track) {
+  track.classList.toggle('on');
+}
+
+/* ========== PARTY SIZE ========== */
+var partySize = 2;
+function changeSize(delta) {
+  partySize = Math.max(1, Math.min(50, partySize + delta));
+  document.getElementById('party-size-display').textContent = partySize;
+  document.getElementById('sum-guests').textContent = partySize + (partySize === 1 ? ' guest' : ' guests');
+  document.getElementById('large-party-note').classList.toggle('hidden', partySize < 8);
+}
+function setSize(n) {
+  partySize = n;
+  document.getElementById('party-size-display').textContent = partySize;
+  document.getElementById('sum-guests').textContent = partySize + (partySize === 1 ? ' guest' : ' guests');
+  document.getElementById('large-party-note').classList.toggle('hidden', partySize < 8);
+}
+
+/* ========== SEATING SUMMARY ========== */
+var seatLabels = { 'no-pref': 'No preference', window: 'Window', booth: 'Booth', bar: 'Sushi Bar' };
+document.querySelectorAll('input[name="seating"]').forEach(function (radio) {
+  radio.addEventListener('change', function () {
+    document.getElementById('sum-seat').textContent = seatLabels[this.value] || 'No preference';
+  });
+});
+
+/* ========== CALENDAR ========== */
+var today     = new Date();
+var calYear   = today.getFullYear();
+var calMonth  = today.getMonth();
+var selectedDate = null;
+var selectedTime = null;
+
+var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+var timeSlots = ['4:00 PM','4:30 PM','5:00 PM','5:30 PM','6:00 PM','6:30 PM','7:00 PM','7:30 PM','8:00 PM','8:30 PM','9:00 PM','9:30 PM'];
+var unavailable = [1, 4, 7]; // slot indices that are "unavailable" (demo)
+
+function buildCalendar() {
+  var label = document.getElementById('cal-month-label');
+  label.textContent = monthNames[calMonth] + ' ' + calYear;
+
+  var grid  = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  var first = new Date(calYear, calMonth, 1).getDay();
+  var days  = new Date(calYear, calMonth + 1, 0).getDate();
+
+  for (var i = 0; i < first; i++) {
+    var blank = document.createElement('div');
+    blank.className = 'cal-day empty';
+    grid.appendChild(blank);
+  }
+
+  for (var d = 1; d <= days; d++) {
+    var cell = document.createElement('div');
+    cell.textContent = d;
+    var dd = new Date(calYear, calMonth, d);
+    var isPast = dd < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    // Closed Mon (1) and Tue (2) for demo — restaurant closed Mon/Tue
+    var isClosed = dd.getDay() === 1; // Monday only for this demo (index.html says Tue-Sat)
+
+    cell.className = 'cal-day';
+    if (isPast || isClosed) { cell.classList.add('past'); }
+    if (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear()) {
+      cell.classList.add('today');
+    }
+    if (selectedDate && d === selectedDate.getDate() && calMonth === selectedDate.getMonth() && calYear === selectedDate.getFullYear()) {
+      cell.classList.add('selected');
+    }
+
+    (function(day, el, closed, past) {
+      if (!closed && !past) {
+        el.addEventListener('click', function () {
+          selectedDate = new Date(calYear, calMonth, day);
+          buildCalendar();
+          buildTimeSlots();
+          var opts = { weekday:'short', month:'short', day:'numeric' };
+          var label = selectedDate.toLocaleDateString('en-US', opts);
+          document.getElementById('selected-date-label').textContent = label;
+          document.getElementById('sum-date').textContent = label;
+          selectedTime = null;
+          document.getElementById('sum-time').textContent = 'Not selected';
+        });
+      }
+    })(d, cell, isClosed, isPast);
+
+    grid.appendChild(cell);
+  }
+}
+
+function calPrev() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  buildCalendar();
+}
+function calNext() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  buildCalendar();
+}
+
+function buildTimeSlots() {
+  var grid = document.getElementById('time-grid');
+  grid.innerHTML = '';
+  timeSlots.forEach(function (t, i) {
+    var div = document.createElement('div');
+    div.className = 'time-slot';
+    div.textContent = t;
+    if (unavailable.indexOf(i) !== -1) {
+      div.classList.add('unavailable');
+      div.title = 'Fully booked';
+    } else {
+      div.addEventListener('click', function () {
+        document.querySelectorAll('.time-slot').forEach(function (s) { s.classList.remove('selected'); });
+        div.classList.add('selected');
+        selectedTime = t;
+        document.getElementById('sum-time').textContent = t;
+      });
+    }
+    grid.appendChild(div);
+  });
+}
+
+buildCalendar();
+buildTimeSlots();
+
+/* ========== SUBMIT ========== */
+function submitReservation() {
+  var first  = document.getElementById('f-first').value.trim();
+  var last   = document.getElementById('f-last').value.trim();
+  var email  = document.getElementById('f-email').value.trim();
+  var phone  = document.getElementById('f-phone').value.trim();
+
+  if (!first || !last || !email || !phone) {
+    alert('Please fill in all required fields (First Name, Last Name, Email, Phone).');
+    return;
+  }
+  if (!selectedDate) { alert('Please select a date.'); return; }
+  if (!selectedTime) { alert('Please select a time slot.'); return; }
+
+  var occCard = document.querySelector('.occ-card.active');
+  var occ  = occCard ? occLabels[occCard.getAttribute('data-occ')] : 'Dinner Table';
+  var opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+
+  document.getElementById('conf-type').textContent   = occ;
+  document.getElementById('conf-date').textContent   = selectedDate.toLocaleDateString('en-US', opts);
+  document.getElementById('conf-time').textContent   = selectedTime;
+  document.getElementById('conf-guests').textContent = partySize + (partySize === 1 ? ' guest' : ' guests');
+
+  var overlay = document.getElementById('success-overlay');
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+</script>
+
+</body>
+</html>
