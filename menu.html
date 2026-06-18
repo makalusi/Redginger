@@ -103,6 +103,217 @@
       .rg-form-grid label{padding-top:0;}
       .rg-cart-fab{bottom:16px;right:16px;}
     }
+
+    /* ============================================================
+       REDESIGNED FOOD CARDS
+    ============================================================ */
+    .mc-wrap {
+      background: #111113;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      position: relative;
+      transition: transform 0.38s cubic-bezier(.22,1,.36,1),
+                  border-color 0.3s,
+                  box-shadow 0.38s;
+    }
+    .mc-wrap:hover {
+      transform: translateY(-6px) scale(1.013);
+      border-color: rgba(220,38,38,0.55);
+      box-shadow:
+        0 0 0 1px rgba(220,38,38,0.18),
+        0 20px 56px rgba(220,38,38,0.15),
+        0 8px 22px rgba(0,0,0,0.55);
+    }
+    /* bottom red glow line on hover */
+    .mc-wrap::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 15%;
+      right: 15%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(220,38,38,0.9), transparent);
+      opacity: 0;
+      transition: opacity 0.38s;
+      z-index: 2;
+    }
+    .mc-wrap:hover::before { opacity: 1; }
+
+    /* image area */
+    .mc-img-wrap {
+      position: relative;
+      height: 215px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .mc-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      transition: transform 0.6s cubic-bezier(.22,1,.36,1);
+    }
+    .mc-wrap:hover .mc-img { transform: scale(1.11); }
+    /* diagonal shimmer sweep on hover */
+    .mc-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        transparent 30%,
+        rgba(255,255,255,0.09) 50%,
+        transparent 70%
+      );
+      transform: translateX(-120%);
+      transition: transform 0.65s cubic-bezier(.22,1,.36,1);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .mc-wrap:hover .mc-img-wrap::after { transform: translateX(120%); }
+    /* bottom gradient fade */
+    .mc-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.04) 0%,
+        transparent 30%,
+        rgba(17,17,19,0.45) 68%,
+        rgba(17,17,19,1) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* gradient placeholder (no food photo) */
+    .mc-no-img {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      position: relative;
+    }
+    .mc-no-img::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 80%, rgba(255,255,255,0.07) 0%, transparent 65%);
+    }
+    /* category gradient themes */
+    .mc-grad-small   { background: linear-gradient(135deg,#180a00 0%,#5a1e08 50%,#8a3012 100%); }
+    .mc-grad-sushi   { background: linear-gradient(135deg,#04081a 0%,#0a1a42 50%,#1a2e72 100%); }
+    .mc-grad-soups   { background: linear-gradient(135deg,#1a0a00 0%,#5a2600 50%,#8a3e00 100%); }
+    .mc-grad-seafood { background: linear-gradient(135deg,#00121a 0%,#003250 50%,#005878 100%); }
+    .mc-grad-poultry { background: linear-gradient(135deg,#1a1000 0%,#5a3c00 50%,#8a5c00 100%); }
+    .mc-grad-beef    { background: linear-gradient(135deg,#160000 0%,#4a0000 50%,#7c0010 100%); }
+    .mc-grad-rice    { background: linear-gradient(135deg,#120a00 0%,#422a00 50%,#725200 100%); }
+    .mc-grad-dessert { background: linear-gradient(135deg,#120818 0%,#3c1262 50%,#642a94 100%); }
+    .mc-grad-drinks  { background: linear-gradient(135deg,#060012 0%,#220054 50%,#420088 100%); }
+
+    /* badges on image */
+    .mc-badge-wrap {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+      z-index: 2;
+    }
+    .mc-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      backdrop-filter: blur(12px);
+      white-space: nowrap;
+    }
+    .mc-badge-amber {
+      background: rgba(210,112,0,0.88);
+      color: #fff;
+      border: 1px solid rgba(255,190,40,0.3);
+    }
+    .mc-badge-red {
+      background: rgba(180,24,24,0.9);
+      color: #fff;
+      border: 1px solid rgba(255,70,70,0.3);
+    }
+
+    /* card text body */
+    .mc-body { padding: 16px 20px 10px; flex: 1; }
+    .mc-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      color: #fff;
+      line-height: 1;
+      margin: 0 0 7px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mc-fire { color: #f97316; }
+    .mc-desc {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.46);
+      line-height: 1.58;
+      margin: 0;
+    }
+
+    /* card footer with price buttons */
+    .mc-foot {
+      padding: 12px 20px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      margin-top: 10px;
+    }
+    .mc-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(220,38,38,0.11);
+      border: 1px solid rgba(220,38,38,0.32);
+      color: #f87171;
+      font-size: 0.73rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 9px;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .mc-btn:hover {
+      background: #dc2626;
+      color: #fff;
+      border-color: #dc2626;
+      box-shadow: 0 0 18px rgba(220,38,38,0.45);
+    }
+
+    /* chef's pick accent */
+    .mc-wrap.mc-chef {
+      background: linear-gradient(160deg, #1c0505 0%, #200808 100%);
+      border-color: rgba(220,38,38,0.28) !important;
+    }
+    .mc-wrap.mc-chef .mc-btn {
+      background: rgba(220,38,38,0.2);
+      border-color: rgba(220,38,38,0.5);
+    }
   </style>
 </head>
 <body class="antialiased overflow-x-hidden selection:bg-red-600 selection:text-white">
@@ -194,521 +405,587 @@
       <p class="text-xs text-white/35 italic mb-10">* Prices are subject to change — please confirm with the restaurant.</p>
 
       <!-- cards grid -->
-      <div id="menu-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div id="menu-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        <!-- SMALL PLATES -->
+        <!-- ===== SMALL PLATES ===== -->
+
         <div class="menu-card" data-cat="small-plates">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">CALAMARI</h3>
-              <p class="text-sm text-white/55 mt-1">Rice-dusted calamari · Korean Gochujang vinaigrette</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-small">🦑</div>
+              <div class="mc-img-overlay"></div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Regular · KShs 950
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">CALAMARI</h3>
+              <p class="mc-desc">Rice-dusted calamari · Korean Gochujang vinaigrette</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Regular · KShs 950</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="small-plates">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">PORK BELLY BAO</h3>
-              <p class="text-sm text-white/55 mt-1">Slow-braised pork belly · Steamed bao buns · Pickled daikon</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> Popular
-              </span>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-small">🥟</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ Popular</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Portion · KShs 1,100
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">PORK BELLY BAO</h3>
+              <p class="mc-desc">Slow-braised pork belly · Steamed bao buns · Pickled daikon</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Portion · KShs 1,100</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="small-plates">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">SPRING ROLLS</h3>
-              <p class="text-sm text-white/55 mt-1">Crispy Vietnamese spring rolls · Sweet chili dipping sauce</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> Popular
-              </span>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-small">🥢</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ Popular</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Portion · KShs 800
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">SPRING ROLLS</h3>
+              <p class="mc-desc">Crispy Vietnamese spring rolls · Sweet chili dipping sauce</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Portion · KShs 800</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="small-plates poultry">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">DRAGON WINGS</h3>
-              <p class="text-sm text-white/55 mt-1">Crispy chicken wings · Asian-spiced glaze · Sesame · Scallion</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <img src=".vscode/image assets/ginger images-14.jpg" alt="Dragon Wings" class="mc-img">
+              <div class="mc-img-overlay"></div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Half · KShs 950
-              </button>
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Full · KShs 1,600
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">DRAGON WINGS</h3>
+              <p class="mc-desc">Crispy chicken wings · Asian-spiced glaze · Sesame · Scallion</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Half · KShs 950</button>
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Full · KShs 1,600</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="small-plates seafood">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">GOCHUJANG SHRIMP</h3>
-              <p class="text-sm text-white/55 mt-1">Honey Gochujang glazed shrimp · Sesame seeds · Fresh lime</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <img src=".vscode/image assets/ginger images-09.jpg" alt="Gochujang Shrimp" class="mc-img">
+              <div class="mc-img-overlay"></div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Regular · KShs 1,200
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">GOCHUJANG SHRIMP</h3>
+              <p class="mc-desc">Honey Gochujang glazed shrimp · Sesame seeds · Fresh lime</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Regular · KShs 1,200</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="small-plates beef">
-          <div class="bg-red-600/10 border border-red-600/40 rounded-2xl p-6 hover:border-red-500 hover:bg-red-600/20 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <div class="flex items-center gap-2">
-                <h3 class="font-display text-2xl text-white">BEEF ISHIYAKI</h3>
-                <iconify-icon icon="solar:fire-bold" class="text-red-400" width="18"></iconify-icon>
+          <div class="mc-wrap mc-chef">
+            <div class="mc-img-wrap">
+              <img src=".vscode/image assets/ginger images-16.jpg" alt="Beef Ishiyaki" class="mc-img">
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-red">🔥 Chef's Pick</span>
               </div>
-              <p class="text-sm text-white/55 mt-1">Marinated beef on a hot stone · Ponzu · Garlic · Scallion · Steamed rice</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-red-500/20 text-red-400 border border-red-500/40 px-2.5 py-1 rounded-full">Chef's Pick</span>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Regular · KShs 1,500
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">BEEF ISHIYAKI <iconify-icon icon="solar:fire-bold" class="mc-fire" width="18"></iconify-icon></h3>
+              <p class="mc-desc">Marinated beef on a hot stone · Ponzu · Garlic · Scallion · Steamed rice</p>
             </div>
-          </div>
-        </div>
-
-        <!-- SOUPS -->
-        <div class="menu-card" data-cat="soups">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">MISO SOUP</h3>
-              <p class="text-sm text-white/55 mt-1">Traditional white miso · Tofu · Wakame seaweed · Scallion</p>
-            </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Bowl · KShs 700
-              </button>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Regular · KShs 1,500</button>
             </div>
           </div>
         </div>
 
+        <!-- ===== SOUPS ===== -->
+
         <div class="menu-card" data-cat="soups">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">TOM YUM</h3>
-              <p class="text-sm text-white/55 mt-1">Thai hot &amp; sour prawn soup · Lemongrass · Kaffir lime · Galangal</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> Popular
-              </span>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-soups">🍜</div>
+              <div class="mc-img-overlay"></div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Bowl · KShs 900
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">MISO SOUP</h3>
+              <p class="mc-desc">Traditional white miso · Tofu · Wakame seaweed · Scallion</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Bowl · KShs 700</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="soups">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">RAMEN</h3>
-              <p class="text-sm text-white/55 mt-1">Tonkotsu broth · Chashu pork · Soft-boiled egg · Nori · Bamboo shoots</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-soups">🍲</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ Popular</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Bowl · KShs 1,300
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">TOM YUM</h3>
+              <p class="mc-desc">Thai hot &amp; sour prawn soup · Lemongrass · Kaffir lime · Galangal</p>
             </div>
-          </div>
-        </div>
-
-        <!-- SUSHI & ROLLS -->
-        <div class="menu-card" data-cat="sushi seafood">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">RED DRAGON</h3>
-              <p class="text-sm text-white/55 mt-1">Spicy tuna inside · Avocado top · Sriracha · Eel sauce</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> House Fave
-              </span>
-            </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Roll · KShs 1,600
-              </button>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Bowl · KShs 900</button>
             </div>
           </div>
         </div>
 
-        <div class="menu-card" data-cat="sushi seafood">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">GINGER TUNA</h3>
-              <p class="text-sm text-white/55 mt-1">Yellowfin tuna · Pickled ginger · Yuzu ponzu · Micro greens</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-red-500/20 text-red-400 border border-red-500/40 px-2.5 py-1 rounded-full">Chef's Signature</span>
+        <div class="menu-card" data-cat="soups">
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-soups">🍥</div>
+              <div class="mc-img-overlay"></div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Roll · KShs 1,800
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">RAMEN</h3>
+              <p class="mc-desc">Tonkotsu broth · Chashu pork · Soft-boiled egg · Nori · Bamboo shoots</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Bowl · KShs 1,300</button>
             </div>
           </div>
         </div>
 
+        <!-- ===== SUSHI & ROLLS ===== -->
+
         <div class="menu-card" data-cat="sushi seafood">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">LOBSTER DYNAMITE</h3>
-              <p class="text-sm text-white/55 mt-1">Tempura lobster · Spicy mayo · Cucumber · Masago</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-sushi">🍣</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ House Fave</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Roll · KShs 2,200
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">RED DRAGON</h3>
+              <p class="mc-desc">Spicy tuna inside · Avocado top · Sriracha · Eel sauce</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Roll · KShs 1,600</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="sushi seafood">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">SALMON AVOCADO</h3>
-              <p class="text-sm text-white/55 mt-1">Fresh Atlantic salmon · Creamy avocado · Sesame · Soy glaze</p>
+          <div class="mc-wrap mc-chef">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-sushi">🐟</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-red">Chef's Signature</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Roll · KShs 1,400
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">GINGER TUNA</h3>
+              <p class="mc-desc">Yellowfin tuna · Pickled ginger · Yuzu ponzu · Micro greens</p>
             </div>
-          </div>
-        </div>
-
-        <div class="menu-card" data-cat="sushi seafood">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">RAINBOW ROLL</h3>
-              <p class="text-sm text-white/55 mt-1">California base · Assorted sashimi topping · Tobiko · Lemon</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> Popular
-              </span>
-            </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Roll · KShs 1,600
-              </button>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Roll · KShs 1,800</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="sushi seafood">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">SASHIMI PLATTER</h3>
-              <p class="text-sm text-white/55 mt-1">Chef's selection of 12 pieces · Daily catch · Wasabi · Pickled ginger</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-sushi">🦞</div>
+              <div class="mc-img-overlay"></div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Platter · KShs 2,800
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">LOBSTER DYNAMITE</h3>
+              <p class="mc-desc">Tempura lobster · Spicy mayo · Cucumber · Masago</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Roll · KShs 2,200</button>
             </div>
           </div>
         </div>
 
-        <!-- SEAFOOD large plates -->
+        <div class="menu-card" data-cat="sushi seafood">
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-sushi">🍱</div>
+              <div class="mc-img-overlay"></div>
+            </div>
+            <div class="mc-body">
+              <h3 class="mc-name">SALMON AVOCADO</h3>
+              <p class="mc-desc">Fresh Atlantic salmon · Creamy avocado · Sesame · Soy glaze</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Roll · KShs 1,400</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-card" data-cat="sushi seafood">
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-sushi">🌈</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ Popular</span>
+              </div>
+            </div>
+            <div class="mc-body">
+              <h3 class="mc-name">RAINBOW ROLL</h3>
+              <p class="mc-desc">California base · Assorted sashimi topping · Tobiko · Lemon</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Roll · KShs 1,600</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-card" data-cat="sushi seafood">
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-sushi">🍣</div>
+              <div class="mc-img-overlay"></div>
+            </div>
+            <div class="mc-body">
+              <h3 class="mc-name">SASHIMI PLATTER</h3>
+              <p class="mc-desc">Chef's selection of 12 pieces · Daily catch · Wasabi · Pickled ginger</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Platter · KShs 2,800</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== SEAFOOD ===== -->
+
         <div class="menu-card" data-cat="seafood">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">MISO SEA BASS</h3>
-              <p class="text-sm text-white/55 mt-1">Glazed miso Chilean sea bass · Bok choy · Jasmine rice · Ginger broth</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-red-500/20 text-red-400 border border-red-500/40 px-2.5 py-1 rounded-full">Chef's Pick</span>
+          <div class="mc-wrap mc-chef">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-seafood">🐟</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-red">Chef's Pick</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Regular · KShs 2,600
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">MISO SEA BASS</h3>
+              <p class="mc-desc">Glazed miso Chilean sea bass · Bok choy · Jasmine rice · Ginger broth</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Regular · KShs 2,600</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="seafood rice-noodles">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">LOBSTER FRIED RICE</h3>
-              <p class="text-sm text-white/55 mt-1">Wok-fried jasmine rice · Lobster · Egg · Scallion · Soy butter</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> Popular
-              </span>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-seafood">🦞</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ Popular</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Regular · KShs 2,400
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">LOBSTER FRIED RICE</h3>
+              <p class="mc-desc">Wok-fried jasmine rice · Lobster · Egg · Scallion · Soy butter</p>
             </div>
-          </div>
-        </div>
-
-        <!-- POULTRY -->
-        <div class="menu-card" data-cat="poultry">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">THAI BASIL CHICKEN</h3>
-              <p class="text-sm text-white/55 mt-1">Wok-fried minced chicken · Fresh Thai basil · Fish sauce · Chili · Steamed rice</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> Popular
-              </span>
-            </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Regular · KShs 1,800
-              </button>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Regular · KShs 2,400</button>
             </div>
           </div>
         </div>
 
+        <!-- ===== POULTRY ===== -->
+
         <div class="menu-card" data-cat="poultry">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">KOREAN FRIED CHICKEN</h3>
-              <p class="text-sm text-white/55 mt-1">Double-fried chicken thighs · Gochujang glaze · Pickled daikon · Sesame</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <img src=".vscode/image assets/ginger images-11.jpg" alt="Thai Basil Chicken" class="mc-img">
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ Popular</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Half · KShs 1,400
-              </button>
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Full · KShs 2,200
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">THAI BASIL CHICKEN</h3>
+              <p class="mc-desc">Wok-fried minced chicken · Fresh Thai basil · Fish sauce · Chili · Steamed rice</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Regular · KShs 1,800</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="poultry">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">LEMONGRASS DUCK</h3>
-              <p class="text-sm text-white/55 mt-1">Slow-roasted duck breast · Lemongrass jus · Jasmine rice · Bok choy</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <img src=".vscode/image assets/ginger images-14.jpg" alt="Korean Fried Chicken" class="mc-img">
+              <div class="mc-img-overlay"></div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Regular · KShs 2,400
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">KOREAN FRIED CHICKEN</h3>
+              <p class="mc-desc">Double-fried chicken thighs · Gochujang glaze · Pickled daikon · Sesame</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Half · KShs 1,400</button>
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Full · KShs 2,200</button>
             </div>
           </div>
         </div>
 
-        <!-- BEEF -->
-        <div class="menu-card" data-cat="beef">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">SHAKING BEEF</h3>
-              <p class="text-sm text-white/55 mt-1">Vietnamese wok-tossed filet · Garlic · Soy · Watercress · Tomato</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> Popular
-              </span>
+        <div class="menu-card" data-cat="poultry">
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-poultry">🦆</div>
+              <div class="mc-img-overlay"></div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Regular · KShs 2,800
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">LEMONGRASS DUCK</h3>
+              <p class="mc-desc">Slow-roasted duck breast · Lemongrass jus · Jasmine rice · Bok choy</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Regular · KShs 2,400</button>
             </div>
           </div>
         </div>
+
+        <!-- ===== BEEF ===== -->
 
         <div class="menu-card" data-cat="beef">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">KOREAN BBQ RIBEYE</h3>
-              <p class="text-sm text-white/55 mt-1">12oz ribeye · Gochujang marinade · Banchan sides · Steamed rice</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-red-500/20 text-red-400 border border-red-500/40 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:fire-bold" width="10"></iconify-icon> Chef's Pick
-              </span>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <img src=".vscode/image assets/ginger images-16.jpg" alt="Shaking Beef" class="mc-img">
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ Popular</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Regular · KShs 3,800
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">SHAKING BEEF</h3>
+              <p class="mc-desc">Vietnamese wok-tossed filet · Garlic · Soy · Watercress · Tomato</p>
             </div>
-          </div>
-        </div>
-
-        <!-- RICE & NOODLES -->
-        <div class="menu-card" data-cat="rice-noodles">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">PAD THAI</h3>
-              <p class="text-sm text-white/55 mt-1">Rice noodles · Tamarind · Egg · Bean sprouts · Peanuts · Lime</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> Popular
-              </span>
-            </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Veg · KShs 1,400
-              </button>
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Prawn · KShs 2,000
-              </button>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Regular · KShs 2,800</button>
             </div>
           </div>
         </div>
 
-        <div class="menu-card" data-cat="rice-noodles">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">THAI CURRY</h3>
-              <p class="text-sm text-white/55 mt-1">Coconut milk · Lemongrass · Fresh herbs · Jasmine rice · Choice of protein</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> Popular
-              </span>
+        <div class="menu-card" data-cat="beef">
+          <div class="mc-wrap mc-chef">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-beef">🥩</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-red">🔥 Chef's Pick</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Regular · KShs 1,800
-              </button>
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Large · KShs 2,400
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">KOREAN BBQ RIBEYE</h3>
+              <p class="mc-desc">12oz ribeye · Gochujang marinade · Banchan sides · Steamed rice</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Regular · KShs 3,800</button>
             </div>
           </div>
         </div>
+
+        <!-- ===== RICE & NOODLES ===== -->
 
         <div class="menu-card" data-cat="rice-noodles">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">PHO BO</h3>
-              <p class="text-sm text-white/55 mt-1">12-hour beef bone broth · Rice noodles · Rare beef slices · Fresh herbs</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-rice">🍜</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ Popular</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Regular · KShs 1,500
-              </button>
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Large · KShs 1,900
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">PAD THAI</h3>
+              <p class="mc-desc">Rice noodles · Tamarind · Egg · Bean sprouts · Peanuts · Lime</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Veg · KShs 1,400</button>
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Prawn · KShs 2,000</button>
             </div>
           </div>
         </div>
 
-        <!-- DESSERTS -->
+        <div class="menu-card" data-cat="rice-noodles">
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-rice">🍛</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ Popular</span>
+              </div>
+            </div>
+            <div class="mc-body">
+              <h3 class="mc-name">THAI CURRY</h3>
+              <p class="mc-desc">Coconut milk · Lemongrass · Fresh herbs · Jasmine rice · Choice of protein</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Regular · KShs 1,800</button>
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Large · KShs 2,400</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-card" data-cat="rice-noodles">
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-rice">🥣</div>
+              <div class="mc-img-overlay"></div>
+            </div>
+            <div class="mc-body">
+              <h3 class="mc-name">PHO BO</h3>
+              <p class="mc-desc">12-hour beef bone broth · Rice noodles · Rare beef slices · Fresh herbs</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Regular · KShs 1,500</button>
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Large · KShs 1,900</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== DESSERTS ===== -->
+
         <div class="menu-card" data-cat="desserts">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">MOCHI ICE CREAM</h3>
-              <p class="text-sm text-white/55 mt-1">Three-piece assortment · Mango, matcha &amp; strawberry</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> Popular
-              </span>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-dessert">🍡</div>
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ Popular</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> 3 pcs · KShs 800
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">MOCHI ICE CREAM</h3>
+              <p class="mc-desc">Three-piece assortment · Mango, matcha &amp; strawberry</p>
             </div>
-          </div>
-        </div>
-
-        <div class="menu-card" data-cat="desserts">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">MATCHA TIRAMISU</h3>
-              <p class="text-sm text-white/55 mt-1">Japanese matcha sponge · Mascarpone · White chocolate shavings</p>
-            </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Slice · KShs 900
-              </button>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> 3 pcs · KShs 800</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="desserts">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">LYCHEE PANNA COTTA</h3>
-              <p class="text-sm text-white/55 mt-1">Vanilla panna cotta · Lychee coulis · Rose water · Toasted coconut</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-dessert">🍵</div>
+              <div class="mc-img-overlay"></div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Serving · KShs 800
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">MATCHA TIRAMISU</h3>
+              <p class="mc-desc">Japanese matcha sponge · Mascarpone · White chocolate shavings</p>
             </div>
-          </div>
-        </div>
-
-        <!-- DRINKS -->
-        <div class="menu-card" data-cat="drinks">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">YUZU LEMONADE</h3>
-              <p class="text-sm text-white/55 mt-1">Fresh yuzu · Lemon juice · Honey · Sparkling water</p>
-              <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-amber-500/15 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-full">
-                <iconify-icon icon="solar:star-bold" width="10"></iconify-icon> Popular
-              </span>
-            </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Glass · KShs 700
-              </button>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Slice · KShs 900</button>
             </div>
           </div>
         </div>
 
-        <div class="menu-card" data-cat="drinks">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">SAKE SELECTION</h3>
-              <p class="text-sm text-white/55 mt-1">Junmai, Ginjo &amp; Daiginjo · Ask your server for today's list</p>
+        <div class="menu-card" data-cat="desserts">
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <div class="mc-no-img mc-grad-dessert">🌸</div>
+              <div class="mc-img-overlay"></div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Glass · from KShs 900
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">LYCHEE PANNA COTTA</h3>
+              <p class="mc-desc">Vanilla panna cotta · Lychee coulis · Rose water · Toasted coconut</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Serving · KShs 800</button>
             </div>
           </div>
         </div>
 
+        <!-- ===== DRINKS ===== -->
+
         <div class="menu-card" data-cat="drinks">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">THAI ICED TEA</h3>
-              <p class="text-sm text-white/55 mt-1">Strongly brewed Ceylon · Condensed milk · Star anise · Vanilla</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <img src=".vscode/image assets/ginger images-05.jpg" alt="Yuzu Lemonade" class="mc-img">
+              <div class="mc-img-overlay"></div>
+              <div class="mc-badge-wrap">
+                <span class="mc-badge mc-badge-amber">⭐ Popular</span>
+              </div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Glass · KShs 700
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">YUZU LEMONADE</h3>
+              <p class="mc-desc">Fresh yuzu · Lemon juice · Honey · Sparkling water</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Glass · KShs 700</button>
             </div>
           </div>
         </div>
 
         <div class="menu-card" data-cat="drinks">
-          <div class="bg-neutral-900 border border-white/10 rounded-2xl p-6 hover:border-red-600/50 transition flex flex-col gap-4 h-full w-full">
-            <div class="flex-1">
-              <h3 class="font-display text-2xl text-white">PLUM WINE</h3>
-              <p class="text-sm text-white/55 mt-1">Japanese umeshu · Served on the rocks or straight · Sweet &amp; tart</p>
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <img src=".vscode/image assets/ginger images-01.jpg" alt="Sake Selection" class="mc-img">
+              <div class="mc-img-overlay"></div>
             </div>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button class="inline-flex items-center gap-1.5 bg-red-600/20 hover:bg-red-600 border border-red-600/50 text-red-400 hover:text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-                <iconify-icon icon="solar:add-circle-linear" width="14"></iconify-icon> Glass · KShs 800
-              </button>
+            <div class="mc-body">
+              <h3 class="mc-name">SAKE SELECTION</h3>
+              <p class="mc-desc">Junmai, Ginjo &amp; Daiginjo · Ask your server for today's list</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Glass · from KShs 900</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-card" data-cat="drinks">
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <img src=".vscode/image assets/ginger images-07.jpg" alt="Thai Iced Tea" class="mc-img">
+              <div class="mc-img-overlay"></div>
+            </div>
+            <div class="mc-body">
+              <h3 class="mc-name">THAI ICED TEA</h3>
+              <p class="mc-desc">Strongly brewed Ceylon · Condensed milk · Star anise · Vanilla</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Glass · KShs 700</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-card" data-cat="drinks">
+          <div class="mc-wrap">
+            <div class="mc-img-wrap">
+              <img src=".vscode/image assets/ginger images-08.jpg" alt="Plum Wine" class="mc-img">
+              <div class="mc-img-overlay"></div>
+            </div>
+            <div class="mc-body">
+              <h3 class="mc-name">PLUM WINE</h3>
+              <p class="mc-desc">Japanese umeshu · Served on the rocks or straight · Sweet &amp; tart</p>
+            </div>
+            <div class="mc-foot">
+              <button class="mc-btn"><iconify-icon icon="solar:add-circle-linear" width="13"></iconify-icon> Glass · KShs 800</button>
             </div>
           </div>
         </div>
