@@ -15,8 +15,6 @@
     .font-serif-it { font-family: 'Instrument Serif', serif; font-style: italic; }
     .grain { background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 3px 3px; }
     .flame-grad { background: radial-gradient(ellipse at 50% 100%, rgba(232,65,24,0.55) 0%, rgba(232,65,24,0.15) 35%, transparent 70%); }
-    @keyframes flicker { 0%,100%{opacity:.85; transform:scale(1)} 50%{opacity:1; transform:scale(1.04)} }
-    .flicker { animation: flicker 2.4s ease-in-out infinite; }
 
     .menu-cat {
       background: transparent;
@@ -34,95 +32,125 @@
       color: #fff;
     }
     .menu-card { display: flex; }
-    .menu-card.hidden-card { display: none; }
-
-    /* ---- CURSOR ---- */
-    body { cursor: none; }
-    #c-dot,#c-ring{position:fixed;top:0;left:0;border-radius:50%;pointer-events:none;z-index:9999;will-change:transform;}
-    #c-dot{width:8px;height:8px;background:#dc2626;box-shadow:0 0 12px #dc2626,0 0 28px rgba(220,38,38,.5);transform:translate(-50%,-50%);}
-    #c-ring{width:38px;height:38px;border:1.5px solid rgba(220,38,38,.6);transform:translate(-50%,-50%);transition:width .22s,height .22s,border-color .22s;}
-    .cursor-hover #c-ring{width:56px;height:56px;border-color:#dc2626;box-shadow:0 0 14px rgba(220,38,38,.5);}
-
-    /* ---- EMBER CANVAS ---- */
-    #ember-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;opacity:.55;}
+    .menu-card.hidden-card { display: none!important; }
 
     /* ---- SCANLINES ---- */
     .scanlines{position:fixed;inset:0;pointer-events:none;z-index:9997;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);}
 
-    /* ---- GLITCH ---- */
-    .glitch{position:relative;display:inline-block;}
-    .glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;font-family:inherit;font-size:inherit;letter-spacing:inherit;}
-    .glitch::before{color:#ff003c;animation:glitch-a 5s infinite;mix-blend-mode:screen;}
-    .glitch::after{color:#00eeff;animation:glitch-b 5s infinite;mix-blend-mode:screen;}
-    @keyframes glitch-a{
-      0%,87%,100%{clip-path:inset(100% 0 0 0);transform:translate(0);}
-      88%{clip-path:inset(8% 0 78% 0);transform:translate(-6px,1px);}
-      90%{clip-path:inset(55% 0 22% 0);transform:translate(6px,-1px);}
-      92%{clip-path:inset(28% 0 48% 0);transform:translate(-4px,2px);}
-      94%{clip-path:inset(75% 0 8% 0);transform:translate(4px,0);}
-      96%{clip-path:inset(42% 0 38% 0);transform:translate(-5px,-1px);}
+    /* ---- NAV HIDE ---- */
+    header{transition:transform .42s cubic-bezier(.4,0,.2,1);}
+    header.nav-hidden{transform:translateY(-130%);}
+
+    /* ---- MOBILE MENU ---- */
+    #mobile-menu{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1);}
+    #mobile-menu.open{max-height:420px;}
+
+    /* ---- NAV LINK ---- */
+    .nav-link{position:relative;}
+    .nav-link::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:#dc2626;transition:width .25s ease;}
+    .nav-link:hover::after,.nav-link.active::after{width:100%;}
+
+    /* ---- ORDER MODALS ---- */
+    .rg-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;}
+    .rg-modal{background:#fff;border-radius:10px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;font-family:'DM Sans',sans-serif;color:#222;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+    .rg-modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid #e8e8e8;}
+    .rg-modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.45rem;letter-spacing:.05em;color:#c0392b;line-height:1;}
+    .rg-modal-x{background:none;border:none;font-size:1.5rem;cursor:pointer;color:#aaa;line-height:1;padding:0 4px;}
+    .rg-modal-x:hover{color:#c0392b;}
+    .rg-modal-body{padding:18px 20px;}
+    .rg-modal-desc{color:#555;font-size:.88rem;margin-bottom:18px;line-height:1.5;}
+    .rg-sizes{display:flex;flex-direction:column;gap:10px;}
+    .rg-size-row{display:flex;align-items:center;gap:10px;font-size:.9rem;padding:6px 0;border-bottom:1px solid #f2f2f2;}
+    .rg-size-row:last-child{border-bottom:none;}
+    .rg-size-label{min-width:80px;color:#333;font-weight:600;}
+    .rg-size-price{flex:1;color:#222;}
+    .rg-qty{display:flex;align-items:center;gap:6px;}
+    .rg-qty-btn{width:28px;height:28px;border:1px solid #ccc;background:#f5f5f5;border-radius:4px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;color:#333;}
+    .rg-qty-btn:hover{background:#dc2626;color:#fff;border-color:#dc2626;}
+    .rg-qty-val{min-width:26px;text-align:center;font-weight:700;font-size:.95rem;}
+    .rg-modal-foot{padding:14px 20px;border-top:1px solid #e8e8e8;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;align-items:center;}
+    .rg-btn{padding:9px 18px;border-radius:6px;font-size:.82rem;font-weight:700;cursor:pointer;border:none;letter-spacing:.03em;white-space:nowrap;}
+    .rg-btn-cancel{background:#f0a500;color:#fff;}
+    .rg-btn-cancel:hover{background:#d4920a;}
+    .rg-btn-green{background:#27ae60;color:#fff;}
+    .rg-btn-green:hover{background:#219a52;}
+    .rg-btn-red{background:#dc2626;color:#fff;}
+    .rg-btn-red:hover{background:#b91c1c;}
+    /* order form */
+    .rg-section-label{font-weight:700;font-size:.88rem;margin-bottom:8px;color:#333;}
+    .rg-order-lines{font-size:.84rem;color:#444;margin-bottom:16px;line-height:1.8;background:#fafafa;border:1px solid #eee;border-radius:6px;padding:10px 14px;}
+    .rg-order-lines .rg-total{color:#c0392b;font-weight:700;margin-top:4px;}
+    .rg-form-grid{display:grid;grid-template-columns:140px 1fr;gap:9px 14px;align-items:start;}
+    .rg-form-grid label{font-size:.87rem;padding-top:7px;color:#444;font-weight:500;}
+    .rg-input{width:100%;border:1px solid #ccc;border-radius:5px;padding:7px 10px;font-size:.87rem;font-family:'DM Sans',sans-serif;box-sizing:border-box;color:#222;}
+    .rg-input:focus{outline:none;border-color:#dc2626;box-shadow:0 0 0 2px rgba(220,38,38,.12);}
+    .rg-textarea{resize:vertical;min-height:70px;}
+    .rg-order-foot-inner{display:flex;gap:10px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;width:100%;}
+    .rg-order-note{font-size:.77rem;color:#c0392b;line-height:1.5;max-width:260px;}
+    .rg-error{color:#c0392b;font-size:.77rem;margin-top:4px;}
+    .rg-order-actions{display:flex;gap:8px;}
+    /* cart fab */
+    .rg-cart-fab{position:fixed;bottom:28px;right:28px;z-index:9998;background:#dc2626;color:#fff;border:none;border-radius:50px;padding:11px 20px 11px 16px;font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(220,38,38,.45);font-family:'DM Sans',sans-serif;}
+    .rg-cart-fab:hover{background:#b91c1c;}
+    .rg-cart-badge{background:#fff;color:#dc2626;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;}
+    /* success screen */
+    .rg-success{text-align:center;padding:32px 20px;}
+    .rg-success-icon{font-size:3rem;color:#27ae60;margin-bottom:12px;}
+    .rg-success h3{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#333;margin-bottom:8px;}
+    .rg-success p{font-size:.88rem;color:#666;}
+    @media(max-width:480px){
+      .rg-form-grid{grid-template-columns:1fr;}
+      .rg-form-grid label{padding-top:0;}
+      .rg-cart-fab{bottom:16px;right:16px;}
     }
-    @keyframes glitch-b{
-      0%,89%,100%{clip-path:inset(100% 0 0 0);transform:translate(0);}
-      90%{clip-path:inset(18% 0 68% 0);transform:translate(5px,0);}
-      92%{clip-path:inset(65% 0 12% 0);transform:translate(-5px,1px);}
-      94%{clip-path:inset(35% 0 42% 0);transform:translate(3px,-1px);}
-      96%{clip-path:inset(5% 0 88% 0);transform:translate(-3px,2px);}
-    }
-
-    /* ---- HERO FLOAT ---- */
-    .hero-float{animation:hero-float 5s ease-in-out infinite;}
-    @keyframes hero-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
-
-    /* ---- CARD REVEAL ---- */
-    .menu-card.will-animate{opacity:0;transform:translateY(48px);transition:opacity .6s ease,transform .6s cubic-bezier(.22,1,.36,1);}
-    .menu-card.will-animate.revealed{opacity:1;transform:translateY(0);}
-    .menu-card.hidden-card{display:none!important;}
-    @keyframes filter-pop{from{opacity:0;transform:translateY(22px) scale(.96);}to{opacity:1;transform:none;}}
-    .menu-card.filter-in{animation:filter-pop .38s cubic-bezier(.34,1.56,.64,1) both;}
-
-    /* ---- NEON ACTIVE CAT ---- */
-    .menu-cat.active-cat{animation:neon-pulse 2.5s ease-in-out infinite;}
-    @keyframes neon-pulse{
-      0%,100%{box-shadow:0 0 12px rgba(220,38,38,.7),0 0 24px rgba(220,38,38,.3);}
-      50%{box-shadow:0 0 24px rgba(220,38,38,1),0 0 48px rgba(220,38,38,.6),0 0 72px rgba(220,38,38,.2);}
-    }
-
-    /* ---- RIPPLE ---- */
-    .ripple-wave{position:absolute;border-radius:50%;background:rgba(255,255,255,.25);transform:scale(0);animation:ripple-go .65s ease-out forwards;pointer-events:none;}
-    @keyframes ripple-go{to{transform:scale(4);opacity:0;}}
-
-    /* ---- NAV BREATHE ---- */
-    header nav{animation:nav-breathe 4s ease-in-out infinite;}
-    @keyframes nav-breathe{0%,100%{box-shadow:0 8px 32px rgba(0,0,0,.6);}50%{box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(220,38,38,.18);}}
-
-    /* ---- PAGE HERO RED PULSE ---- */
-    .flame-grad{animation:flame-pulse 3s ease-in-out infinite;}
-    @keyframes flame-pulse{0%,100%{opacity:.5;}50%{opacity:.85;}}
   </style>
 </head>
 <body class="antialiased overflow-x-hidden selection:bg-red-600 selection:text-white">
-  <canvas id="ember-canvas"></canvas>
-  <div id="c-dot"></div>
-  <div id="c-ring"></div>
   <div class="scanlines"></div>
 
   <!-- NAV -->
-  <header class="fixed top-3 inset-x-0 z-50 px-3 sm:px-6 flex justify-center">
-    <nav class="w-full max-w-7xl bg-black/80 backdrop-blur border border-white/10 rounded-xl px-4 sm:px-6 py-3 flex items-center justify-between shadow-2xl">
-      <a href="index.html" class="flex items-center">
-        <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-10 w-auto">
-      </a>
-      <div class="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest text-white/70">
-        <a href="index.html#burgers" class="hover:text-white transition">Small Plates</a>
-        <a href="index.html#hotdogs" class="hover:text-white transition">Sushi</a>
-        <a href="menu.html" class="text-white transition">Menu</a>
-        <a href="index.html#contact" class="hover:text-white transition">Contact</a>
+  <header id="site-header" class="fixed top-3 inset-x-0 z-50 px-3 sm:px-6 flex justify-center">
+    <nav class="w-full max-w-7xl bg-black/85 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl">
+      <div class="px-5 sm:px-7 py-3.5 flex items-center justify-between">
+        <a href="index.html" class="flex items-center shrink-0">
+          <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-9 w-auto">
+        </a>
+        <div class="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-widest text-white/60">
+          <a href="index.html"       class="nav-link hover:text-white transition">Home</a>
+          <a href="index.html#about" class="nav-link hover:text-white transition">About Us</a>
+          <a href="menu.html"        class="nav-link active hover:text-white transition">Menu</a>
+          <a href="reserve.html"     class="nav-link hover:text-white transition">Events</a>
+          <a href="gallery.html"     class="nav-link hover:text-white transition">Gallery</a>
+          <a href="contact.html"     class="nav-link hover:text-white transition">Contact</a>
+        </div>
+        <div class="flex items-center gap-3">
+          <a href="reserve.html" class="hidden sm:inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-[11px] uppercase tracking-widest font-semibold px-5 py-2.5 rounded-xl">
+            Reserve a Table
+            <iconify-icon icon="solar:arrow-right-linear" width="13"></iconify-icon>
+          </a>
+          <button id="nav-toggle" aria-label="Toggle menu" class="lg:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5 rounded-lg border border-white/15 hover:border-red-500 transition">
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+          </button>
+        </div>
       </div>
-      <a href="index.html#contact" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-xs uppercase tracking-widest font-semibold px-4 py-2 rounded-lg">
-        Reserve
-        <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
-      </a>
+      <div id="mobile-menu" class="lg:hidden border-t border-white/8">
+        <div class="px-5 py-5 flex flex-col gap-1">
+          <a href="index.html"       class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Home</a>
+          <a href="index.html#about" class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">About Us</a>
+          <a href="menu.html"        class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white hover:bg-white/5 uppercase tracking-widest transition">Menu</a>
+          <a href="reserve.html"     class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Events</a>
+          <a href="gallery.html"     class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Gallery</a>
+          <a href="contact.html"     class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Contact</a>
+          <div class="mt-3 pt-3 border-t border-white/10">
+            <a href="reserve.html" class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-sm uppercase tracking-widest font-semibold px-5 py-3 rounded-xl">
+              Reserve a Table
+              <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+            </a>
+          </div>
+        </div>
+      </div>
     </nav>
   </header>
 
@@ -133,8 +161,8 @@
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6">
       <p class="text-xs uppercase tracking-[0.3em] text-red-500 mb-3">— The Menu</p>
       <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <h1 class="font-display text-7xl sm:text-9xl text-white tracking-tight leading-none hero-float">
-          <span class="glitch" data-text="OUR">OUR</span><br><span class="glitch text-red-600" data-text="MENU">MENU</span>
+        <h1 class="font-display text-7xl sm:text-9xl text-white tracking-tight leading-none">
+          OUR<br><span class="text-red-600">MENU</span>
         </h1>
         <p class="text-sm text-white/55 max-w-xs pb-2">
           Combo meals from KShs 700 — small plate, main &amp; rice or noodles.
@@ -253,7 +281,7 @@
             <div class="flex-1">
               <div class="flex items-center gap-2">
                 <h3 class="font-display text-2xl text-white">BEEF ISHIYAKI</h3>
-                <iconify-icon icon="solar:fire-bold" class="text-red-400 flicker" width="18"></iconify-icon>
+                <iconify-icon icon="solar:fire-bold" class="text-red-400" width="18"></iconify-icon>
               </div>
               <p class="text-sm text-white/55 mt-1">Marinated beef on a hot stone · Ponzu · Garlic · Scallion · Steamed rice</p>
               <span class="inline-flex items-center gap-1 mt-3 text-[10px] uppercase tracking-widest bg-red-500/20 text-red-400 border border-red-500/40 px-2.5 py-1 rounded-full">Chef's Pick</span>
@@ -719,6 +747,102 @@
     </div>
   </footer>
 
+  <!-- ==================== ITEM ORDER MODAL ==================== -->
+  <div id="item-modal" class="rg-overlay" style="display:none" role="dialog" aria-modal="true">
+    <div class="rg-modal">
+      <div class="rg-modal-head">
+        <h2 id="imod-name" class="rg-modal-title"></h2>
+        <button id="imod-close" class="rg-modal-x" aria-label="Close">×</button>
+      </div>
+      <div class="rg-modal-body">
+        <p id="imod-desc" class="rg-modal-desc"></p>
+        <div id="imod-sizes" class="rg-sizes"></div>
+      </div>
+      <div class="rg-modal-foot">
+        <button id="imod-cancel" class="rg-btn rg-btn-cancel">Cancel</button>
+        <button id="imod-return" class="rg-btn rg-btn-green">Add &amp; return</button>
+        <button id="imod-takeaway" class="rg-btn rg-btn-green">Add &amp; take away</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ORDER / CHECKOUT MODAL ==================== -->
+  <div id="order-modal" class="rg-overlay" style="display:none" role="dialog" aria-modal="true">
+    <div class="rg-modal">
+      <div class="rg-modal-head">
+        <h2 id="omod-title" class="rg-modal-title">TAKE AWAY ORDER</h2>
+        <button id="omod-close" class="rg-modal-x" aria-label="Close">×</button>
+      </div>
+
+      <!-- order form view -->
+      <div id="omod-form-view">
+        <div class="rg-modal-body">
+          <p class="rg-section-label">Order detail:</p>
+          <div id="omod-lines" class="rg-order-lines"></div>
+
+          <div class="rg-form-grid">
+            <label for="o-name">Full Name:</label>
+            <input id="o-name" type="text" class="rg-input" placeholder="e.g. Jane Doe">
+
+            <label for="o-phone">Mobile Phone:</label>
+            <input id="o-phone" type="tel" class="rg-input" placeholder="e.g. 0712 345 678">
+
+            <label for="o-email">Email:</label>
+            <input id="o-email" type="email" class="rg-input" placeholder="e.g. jane@email.com">
+
+            <label for="o-type">Order type:</label>
+            <select id="o-type" class="rg-input">
+              <option value="takeaway">Take Away</option>
+              <option value="dinein">Dine In</option>
+              <option value="delivery">Delivery</option>
+            </select>
+
+            <label for="o-table" id="o-table-label" style="display:none">Table No.:</label>
+            <input id="o-table" type="text" class="rg-input" placeholder="e.g. Table 4" style="display:none">
+
+            <label for="o-delivery" id="o-delivery-label">Delivery required:</label>
+            <select id="o-delivery" class="rg-input">
+              <option value="no">NO</option>
+              <option value="yes">YES</option>
+            </select>
+
+            <label for="o-notes">Special instructions:</label>
+            <textarea id="o-notes" class="rg-input rg-textarea" placeholder="Allergies, spice level, extra sauces…"></textarea>
+          </div>
+        </div>
+
+        <div class="rg-modal-foot">
+          <div class="rg-order-foot-inner">
+            <div class="rg-order-note">
+              <div>Please note that a charge for containers will be applied.</div>
+              <div id="omod-validation" class="rg-error" style="display:none">Full name, mobile phone and email are required.</div>
+            </div>
+            <div class="rg-order-actions">
+              <button id="omod-return" class="rg-btn rg-btn-cancel">Return</button>
+              <button id="omod-submit" class="rg-btn rg-btn-red">Place Order</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- success view -->
+      <div id="omod-success-view" style="display:none" class="rg-success">
+        <div class="rg-success-icon">✓</div>
+        <h3>Order Received!</h3>
+        <p>Thank you. We'll confirm your order shortly via phone or email.</p>
+        <br>
+        <button id="omod-done" class="rg-btn rg-btn-red">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FLOATING CART BUTTON ==================== -->
+  <button id="rg-cart-btn" class="rg-cart-fab" style="display:none" aria-label="View order">
+    <iconify-icon icon="solar:cart-large-2-bold" width="20"></iconify-icon>
+    View Order
+    <span id="rg-cart-badge" class="rg-cart-badge">0</span>
+  </button>
+
   <script>
   (function () {
 
@@ -738,185 +862,297 @@
           var cats = card.getAttribute('data-cat').split(' ');
           var show = cat === 'all' || cats.indexOf(cat) !== -1;
           if (show) {
-            card.classList.remove('hidden-card', 'will-animate');
-            card.classList.remove('filter-in');
-            void card.offsetWidth; /* force reflow so animation replays */
-            card.classList.add('filter-in');
+            card.classList.remove('hidden-card');
             visible++;
           } else {
             card.classList.add('hidden-card');
-            card.classList.remove('filter-in', 'revealed', 'will-animate');
           }
         });
         empty.classList.toggle('hidden', visible > 0);
       });
     });
 
-    /* ===================== CUSTOM CURSOR ===================== */
-    var dot  = document.getElementById('c-dot');
-    var ring = document.getElementById('c-ring');
-    var mx = -100, my = -100, rx = -100, ry = -100;
-
-    document.addEventListener('mousemove', function (e) {
-      mx = e.clientX; my = e.clientY;
-      dot.style.transform = 'translate(' + (mx - 4) + 'px,' + (my - 4) + 'px)';
+    /* NAV HIDE ON SCROLL */
+    var siteHeader = document.getElementById('site-header');
+    var lastScrollY = 0;
+    window.addEventListener('scroll', function () {
+      var current = window.scrollY;
+      if (current > lastScrollY && current > 100) { siteHeader.classList.add('nav-hidden'); }
+      else { siteHeader.classList.remove('nav-hidden'); }
+      lastScrollY = current <= 0 ? 0 : current;
     });
 
-    (function ringLoop() {
-      rx += (mx - rx) * 0.12;
-      ry += (my - ry) * 0.12;
-      ring.style.transform = 'translate(' + (rx - 19) + 'px,' + (ry - 19) + 'px)';
-      requestAnimationFrame(ringLoop);
-    })();
-
-    /* expand ring on interactive elements */
-    document.querySelectorAll('a, button').forEach(function (el) {
-      el.addEventListener('mouseenter', function () { document.body.classList.add('cursor-hover'); });
-      el.addEventListener('mouseleave', function () { document.body.classList.remove('cursor-hover'); });
-    });
-
-    /* ===================== FIRE EMBERS (CANVAS) ===================== */
-    var canvas = document.getElementById('ember-canvas');
-    var ctx    = canvas.getContext('2d');
-
-    function resizeCanvas() {
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
+    /* MOBILE MENU */
+    var navToggle = document.getElementById('nav-toggle');
+    var mobileMenu = document.getElementById('mobile-menu');
+    var hamLines = navToggle ? navToggle.querySelectorAll('.ham-line') : [];
+    var menuOpen = false;
+    function setMenu(open) {
+      menuOpen = open;
+      mobileMenu.classList.toggle('open', open);
+      if (hamLines.length === 3) {
+        if (open) { hamLines[0].style.transform='translateY(6px) rotate(45deg)'; hamLines[1].style.opacity='0'; hamLines[2].style.transform='translateY(-6px) rotate(-45deg)'; }
+        else { hamLines[0].style.transform=''; hamLines[1].style.opacity=''; hamLines[2].style.transform=''; }
+      }
     }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    if (navToggle) navToggle.addEventListener('click', function () { setMenu(!menuOpen); });
+    document.querySelectorAll('.mobile-nav-link').forEach(function (l) { l.addEventListener('click', function () { setMenu(false); }); });
+    document.addEventListener('click', function (e) { if (menuOpen && siteHeader && !siteHeader.contains(e.target)) setMenu(false); });
 
-    function Ember() { this.reset(true); }
-    Ember.prototype.reset = function (scatter) {
-      this.x     = Math.random() * canvas.width;
-      this.y     = scatter ? Math.random() * canvas.height : canvas.height + 10;
-      this.vx    = (Math.random() - 0.5) * 0.7;
-      this.vy    = -(Math.random() * 2.2 + 0.6);
-      this.r     = Math.random() * 2.5 + 0.5;
-      this.life  = scatter ? Math.random() : 1;
-      this.decay = Math.random() * 0.004 + 0.002;
-      this.warm  = Math.random() > 0.45;
-    };
-    Ember.prototype.tick = function () {
-      this.x   += this.vx + Math.sin(Date.now() * 0.001 + this.x * 0.008) * 0.3;
-      this.y   += this.vy;
-      this.life -= this.decay;
-      if (this.life <= 0 || this.y < -20) this.reset(false);
-    };
-    Ember.prototype.draw = function () {
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, this.life) * 0.8;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-      ctx.fillStyle   = this.warm ? '#f97316' : '#ef4444';
-      ctx.shadowBlur  = 12;
-      ctx.shadowColor = this.warm ? '#f97316' : '#ef4444';
-      ctx.fill();
-      ctx.restore();
-    };
+    /* ===================== ORDER SYSTEM ===================== */
 
-    var embers = [];
-    for (var i = 0; i < 80; i++) embers.push(new Ember());
+    var order = []; // [{name, size, price, qty}]
 
-    (function emberLoop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (var j = 0; j < embers.length; j++) { embers[j].tick(); embers[j].draw(); }
-      requestAnimationFrame(emberLoop);
-    })();
-
-    /* ===================== SCROLL REVEAL ===================== */
-    var allCards = Array.from(document.querySelectorAll('.menu-card'));
-
-    /* mark cards for animation — done via JS so cards stay visible if JS is slow */
-    allCards.forEach(function (c) { c.classList.add('will-animate'); });
-
-    var revealObs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        var idx   = allCards.indexOf(entry.target) % 3;
-        var delay = idx * 80;
-        setTimeout(function () {
-          entry.target.classList.add('revealed');
-        }, delay);
-        revealObs.unobserve(entry.target);
-      });
-    }, { threshold: 0.05, rootMargin: '0px 0px 40px 0px' });
-
-    allCards.forEach(function (c) { revealObs.observe(c); });
-
-    /* fallback: reveal everything after 1.2s in case observer misfires */
-    setTimeout(function () {
-      allCards.forEach(function (c) { c.classList.add('revealed'); });
-    }, 1200);
-
-    /* ===================== 3-D CARD TILT ===================== */
-    allCards.forEach(function (card) {
-      var inner = card.querySelector('div');
-      if (!inner) return;
-      card.addEventListener('mousemove', function (e) {
-        var r  = card.getBoundingClientRect();
-        var dx = (e.clientX - r.left - r.width  / 2) / (r.width  / 2);
-        var dy = (e.clientY - r.top  - r.height / 2) / (r.height / 2);
-        inner.style.transition = 'transform .08s ease, box-shadow .08s ease';
-        inner.style.transform  = 'perspective(600px) rotateY(' + (dx * 12) + 'deg) rotateX(' + (-dy * 12) + 'deg) scale(1.04)';
-        inner.style.boxShadow  = (-dx * 20) + 'px ' + (-dy * 20) + 'px 36px rgba(220,38,38,.25)';
-      });
-      card.addEventListener('mouseleave', function () {
-        inner.style.transition = 'transform .5s cubic-bezier(.22,1,.36,1), box-shadow .5s ease';
-        inner.style.transform  = '';
-        inner.style.boxShadow  = '';
-      });
-    });
-
-    /* ===================== MAGNETIC PRICE BUTTONS ===================== */
-    document.querySelectorAll('.menu-card button').forEach(function (btn) {
-      btn.addEventListener('mousemove', function (e) {
-        var r  = btn.getBoundingClientRect();
-        var dx = e.clientX - (r.left + r.width  / 2);
-        var dy = e.clientY - (r.top  + r.height / 2);
-        btn.style.transform  = 'translate(' + (dx * 0.3) + 'px,' + (dy * 0.3) + 'px)';
-        btn.style.transition = 'transform .08s ease';
-      });
-      btn.addEventListener('mouseleave', function () {
-        btn.style.transition = 'transform .5s cubic-bezier(.34,1.56,.64,1)';
-        btn.style.transform  = '';
-      });
-    });
-
-    /* ===================== TEXT SCRAMBLE ON HOVER ===================== */
-    var chars = '!<>-_\\/[]{}=+*^?#ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$%';
-    function scramble(el) {
-      var orig  = el.textContent;
-      var iter  = 0;
-      var total = orig.length * 4;
-      var iv = setInterval(function () {
-        el.textContent = orig.split('').map(function (ch, i) {
-          if (ch === ' ') return ' ';
-          if (i < iter / 4) return orig[i];
-          return chars[Math.floor(Math.random() * chars.length)];
-        }).join('');
-        if (++iter > total) { el.textContent = orig; clearInterval(iv); }
-      }, 28);
+    /* -- helpers -- */
+    function fmtPrice(n) {
+      return 'KES ' + n.toLocaleString('en-KE') + '.00';
     }
-    document.querySelectorAll('.menu-card h3').forEach(function (h) {
-      h.addEventListener('mouseenter', function () { scramble(h); });
+
+    /* extract text nodes only (skips iconify-icon content) */
+    function btnText(btn) {
+      var t = '';
+      btn.childNodes.forEach(function (node) {
+        if (node.nodeType === 3) t += node.textContent;
+      });
+      return t.trim();
+    }
+
+    /* parse "Regular · KShs 950" or "Roll · KShs 1,600" */
+    function parseBtn(btn) {
+      var text = btnText(btn);
+      var m = text.match(/^(.+?)\s*[·\-]\s*KShs\s*([\d,]+)/i);
+      if (!m) return null;
+      var price = parseInt(m[2].replace(/,/g, ''), 10);
+      return { size: m[1].trim(), price: price };
+    }
+
+    function findOrderLine(name, size) {
+      for (var i = 0; i < order.length; i++) {
+        if (order[i].name === name && order[i].size === size) return order[i];
+      }
+      return null;
+    }
+
+    function totalItems() {
+      return order.reduce(function (s, o) { return s + o.qty; }, 0);
+    }
+
+    function totalPrice() {
+      return order.reduce(function (s, o) { return s + o.price * o.qty; }, 0);
+    }
+
+    /* -- cart FAB -- */
+    var cartBtn = document.getElementById('rg-cart-btn');
+    var cartBadge = document.getElementById('rg-cart-badge');
+
+    function refreshCartBtn() {
+      var n = totalItems();
+      cartBadge.textContent = n;
+      cartBtn.style.display = n > 0 ? 'flex' : 'none';
+    }
+
+    cartBtn.addEventListener('click', function () { openOrderModal(); });
+
+    /* ---- ITEM MODAL ---- */
+    var imod       = document.getElementById('item-modal');
+    var imodName   = document.getElementById('imod-name');
+    var imodDesc   = document.getElementById('imod-desc');
+    var imodSizes  = document.getElementById('imod-sizes');
+    var curSizes   = []; /* [{size, price, qty}] for the open item */
+
+    function openItemModal(card) {
+      var h3 = card.querySelector('h3');
+      var p  = card.querySelector('p');
+      var name = h3 ? h3.textContent.trim() : '';
+      var desc = p  ? p.textContent.trim()  : '';
+
+      imodName.textContent = name;
+      imodDesc.textContent = desc;
+
+      /* collect sizes from all buttons in this card */
+      curSizes = [];
+      card.querySelectorAll('button').forEach(function (b) {
+        var parsed = parseBtn(b);
+        if (parsed) curSizes.push({ size: parsed.size, price: parsed.price, qty: 0 });
+      });
+
+      renderSizeRows();
+      imod.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function renderSizeRows() {
+      imodSizes.innerHTML = '';
+      curSizes.forEach(function (s, i) {
+        var row = document.createElement('div');
+        row.className = 'rg-size-row';
+        row.innerHTML =
+          '<span class="rg-size-label">' + s.size + ':</span>' +
+          '<span class="rg-size-price">KES ' + s.price.toLocaleString('en-KE') + '.00</span>' +
+          '<div class="rg-qty">' +
+            '<button class="rg-qty-btn" data-i="' + i + '" data-d="-1">−</button>' +
+            '<span class="rg-qty-val">' + s.qty + '</span>' +
+            '<button class="rg-qty-btn" data-i="' + i + '" data-d="1">+</button>' +
+          '</div>';
+        imodSizes.appendChild(row);
+      });
+
+      imodSizes.querySelectorAll('.rg-qty-btn').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var i = parseInt(b.getAttribute('data-i'), 10);
+          var d = parseInt(b.getAttribute('data-d'), 10);
+          curSizes[i].qty = Math.max(0, curSizes[i].qty + d);
+          renderSizeRows();
+        });
+      });
+    }
+
+    function closeItemModal() {
+      imod.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    function addCurToOrder() {
+      var name = imodName.textContent;
+      curSizes.forEach(function (s) {
+        if (s.qty < 1) return;
+        var line = findOrderLine(name, s.size);
+        if (line) { line.qty += s.qty; }
+        else { order.push({ name: name, size: s.size, price: s.price, qty: s.qty }); }
+      });
+      refreshCartBtn();
+    }
+
+    document.getElementById('imod-close').addEventListener('click', closeItemModal);
+    document.getElementById('imod-cancel').addEventListener('click', closeItemModal);
+    imod.addEventListener('click', function (e) { if (e.target === imod) closeItemModal(); });
+
+    document.getElementById('imod-return').addEventListener('click', function () {
+      addCurToOrder();
+      closeItemModal();
     });
 
-    /* ===================== RIPPLE ON FILTER BUTTONS ===================== */
-    document.querySelectorAll('.menu-cat').forEach(function (btn) {
-      btn.style.position = 'relative';
-      btn.style.overflow = 'hidden';
-      btn.addEventListener('click', function (e) {
-        var wave = document.createElement('span');
-        var r    = btn.getBoundingClientRect();
-        var size = Math.max(r.width, r.height) * 2.5;
-        wave.className    = 'ripple-wave';
-        wave.style.cssText = 'width:' + size + 'px;height:' + size + 'px;'
-          + 'left:' + (e.clientX - r.left - size / 2) + 'px;'
-          + 'top:'  + (e.clientY - r.top  - size / 2) + 'px;';
-        btn.appendChild(wave);
-        setTimeout(function () { wave.remove(); }, 700);
+    document.getElementById('imod-takeaway').addEventListener('click', function () {
+      addCurToOrder();
+      closeItemModal();
+      openOrderModal();
+    });
+
+    /* attach click to every menu card button */
+    document.querySelectorAll('.menu-card').forEach(function (card) {
+      card.querySelectorAll('button').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          openItemModal(card);
+        });
       });
+    });
+
+    /* ---- ORDER MODAL ---- */
+    var omod       = document.getElementById('order-modal');
+    var omodTitle  = document.getElementById('omod-title');
+    var omodLines  = document.getElementById('omod-lines');
+    var omodForm   = document.getElementById('omod-form-view');
+    var omodOk     = document.getElementById('omod-success-view');
+    var oDelivery  = document.getElementById('o-delivery');
+    var oDeliveryLabel = document.getElementById('o-delivery-label');
+    var oType      = document.getElementById('o-type');
+    var oTable     = document.getElementById('o-table');
+    var oTableLabel = document.getElementById('o-table-label');
+    var oValidation = document.getElementById('omod-validation');
+
+    /* show/hide delivery row and table row based on order type */
+    oType.addEventListener('change', function () {
+      var val = oType.value;
+      var isDelivery = val === 'delivery';
+      var isDineIn   = val === 'dinein';
+      oDelivery.parentNode.style.display = '';
+      oDelivery.style.display    = isDelivery ? '' : 'none';
+      oDeliveryLabel.style.display = isDelivery ? '' : 'none';
+      oTable.style.display       = isDineIn ? '' : 'none';
+      oTableLabel.style.display  = isDineIn ? '' : 'none';
+      var titles = { takeaway: 'TAKE AWAY ORDER', dinein: 'DINE IN ORDER', delivery: 'DELIVERY ORDER' };
+      omodTitle.textContent = titles[val] || 'ORDER';
+    });
+    /* trigger once to set initial state */
+    oType.dispatchEvent(new Event('change'));
+
+    function renderOrderLines() {
+      var html = '';
+      order.forEach(function (o) {
+        html += '<div>' + o.qty + ' × ' + o.size + ' — ' + o.name + ' : ' + fmtPrice(o.price * o.qty) + '</div>';
+      });
+      html += '<div class="rg-total">Total: ' + fmtPrice(totalPrice()) + '</div>';
+      omodLines.innerHTML = html;
+    }
+
+    function openOrderModal() {
+      if (order.length === 0) {
+        alert('Add at least one item to your order first.');
+        return;
+      }
+      renderOrderLines();
+      omodForm.style.display = '';
+      omodOk.style.display   = 'none';
+      oValidation.style.display = 'none';
+      omod.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeOrderModal() {
+      omod.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('omod-close').addEventListener('click', closeOrderModal);
+    document.getElementById('omod-return').addEventListener('click', closeOrderModal);
+    omod.addEventListener('click', function (e) { if (e.target === omod) closeOrderModal(); });
+    document.getElementById('omod-done').addEventListener('click', closeOrderModal);
+
+    document.getElementById('omod-submit').addEventListener('click', function () {
+      var name  = document.getElementById('o-name').value.trim();
+      var phone = document.getElementById('o-phone').value.trim();
+      var email = document.getElementById('o-email').value.trim();
+
+      if (!name || !phone || !email) {
+        oValidation.style.display = 'block';
+        return;
+      }
+      oValidation.style.display = 'none';
+
+      /* build WhatsApp message */
+      var type  = oType.value;
+      var notes = document.getElementById('o-notes').value.trim();
+      var table = (type === 'dinein') ? document.getElementById('o-table').value.trim() : '';
+
+      var msg = '🍜 RED GINGER ORDER\n\n';
+      order.forEach(function (o) {
+        msg += o.qty + ' × ' + o.size + ' ' + o.name + ' — KES ' + (o.price * o.qty).toLocaleString('en-KE') + '\n';
+      });
+      msg += '\nTotal: KES ' + totalPrice().toLocaleString('en-KE');
+      msg += '\n\nOrder type: ' + type.toUpperCase();
+      if (table) msg += '\nTable: ' + table;
+      msg += '\nName: ' + name;
+      msg += '\nPhone: ' + phone;
+      msg += '\nEmail: ' + email;
+      if (notes) msg += '\nNotes: ' + notes;
+
+      /* ⚙️  Replace 254XXXXXXXXX with the restaurant's WhatsApp number */
+      var waNumber = '254XXXXXXXXX';
+      window.open('https://wa.me/' + waNumber + '?text=' + encodeURIComponent(msg), '_blank');
+
+      /* show success, clear cart */
+      order = [];
+      refreshCartBtn();
+      document.getElementById('o-name').value  = '';
+      document.getElementById('o-phone').value = '';
+      document.getElementById('o-email').value = '';
+      document.getElementById('o-notes').value = '';
+      oType.value = 'takeaway';
+      oType.dispatchEvent(new Event('change'));
+
+      omodForm.style.display = 'none';
+      omodOk.style.display   = '';
     });
 
   })();

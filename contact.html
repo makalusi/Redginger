@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — RED GINGER · Nairobi, Kenya</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background:#0b0708; color:#f4ede4; }
+    .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: -0.01em; }
+    .font-serif-it { font-family: 'Instrument Serif', serif; font-style: italic; }
+    .grain { background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 3px 3px; }
+    .flame-grad { background: radial-gradient(ellipse at 50% 100%, rgba(232,65,24,0.55) 0%, rgba(232,65,24,0.15) 35%, transparent 70%); }
+    @keyframes flicker { 0%,100%{opacity:.85; transform:scale(1)} 50%{opacity:1; transform:scale(1.04)} }
+    .flicker { animation: flicker 2.4s ease-in-out infinite; }
+    @keyframes rise { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
+    .rise { animation: rise .8s ease-out both; }
+
+    /* CURSOR */
+    body { cursor: none; }
+    #c-dot,#c-ring { position:fixed;top:0;left:0;border-radius:50%;pointer-events:none;z-index:9999;will-change:transform; }
+    #c-dot { width:8px;height:8px;background:#dc2626;box-shadow:0 0 12px #dc2626,0 0 28px rgba(220,38,38,.5); }
+    #c-ring { width:38px;height:38px;border:1.5px solid rgba(220,38,38,.55);transition:width .22s,height .22s,border-color .22s; }
+    .cursor-hover #c-ring { width:56px;height:56px;border-color:#dc2626;box-shadow:0 0 14px rgba(220,38,38,.5); }
+
+    /* SCANLINES */
+    .scanlines { position:fixed;inset:0;pointer-events:none;z-index:9997;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px); }
+
+    /* NAV BREATHE */
+    header nav { animation:nav-breathe 4s ease-in-out infinite; }
+    @keyframes nav-breathe { 0%,100%{box-shadow:0 8px 32px rgba(0,0,0,.6);}50%{box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(220,38,38,.15);} }
+
+    /* NAV HIDE */
+    header { transition:transform .42s cubic-bezier(.4,0,.2,1); }
+    header.nav-hidden { transform:translateY(-130%); }
+
+    /* MOBILE MENU */
+    #mobile-menu { max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .3s ease; }
+    #mobile-menu.open { max-height:420px; }
+
+    /* NAV LINK */
+    .nav-link { position:relative; }
+    .nav-link::after { content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:#dc2626;transition:width .25s ease; }
+    .nav-link:hover::after,.nav-link.active::after { width:100%; }
+
+    /* SCROLL REVEAL */
+    .reveal-me { opacity:0;transform:translateY(44px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1); }
+    .reveal-me.from-left { transform:translateX(-50px); }
+    .reveal-me.from-right { transform:translateX(50px); }
+    .reveal-me.revealed { opacity:1 !important;transform:none !important; }
+
+    /* RIPPLE */
+    .ripple-wave { position:absolute;border-radius:50%;background:rgba(255,255,255,.2);transform:scale(0);animation:ripple-go .65s ease-out forwards;pointer-events:none; }
+    @keyframes ripple-go { to{transform:scale(4);opacity:0;} }
+
+    /* MAGNETIC */
+    a.inline-flex, button.inline-flex { position:relative; }
+
+    /* FORM INPUTS */
+    .form-input {
+      width:100%;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:12px;
+      padding:14px 18px;
+      color:#f4ede4;
+      font-family:'DM Sans',sans-serif;
+      font-size:14px;
+      transition:border-color .25s,background .25s,box-shadow .25s;
+      outline:none;
+    }
+    .form-input::placeholder { color:rgba(255,255,255,0.28); }
+    .form-input:focus {
+      border-color:#dc2626;
+      background:rgba(220,38,38,0.06);
+      box-shadow:0 0 0 3px rgba(220,38,38,0.12);
+    }
+    textarea.form-input { resize:vertical; min-height:140px; }
+
+    /* HERO TITLE UNDERLINE */
+    .red-underline {
+      position:relative;
+      display:inline-block;
+    }
+    .red-underline::after {
+      content:'';
+      position:absolute;
+      bottom:-6px; left:0;
+      width:100%; height:3px;
+      background:#dc2626;
+      border-radius:2px;
+    }
+
+    /* INFO CARD */
+    .info-card {
+      display:flex;
+      align-items:flex-start;
+      gap:16px;
+      padding:20px 24px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.10);
+      border-radius:16px;
+      transition:border-color .25s,background .25s;
+    }
+    .info-card:hover {
+      border-color:rgba(220,38,38,0.45);
+      background:rgba(220,38,38,0.05);
+    }
+    .info-icon {
+      width:42px; height:42px;
+      border-radius:10px;
+      background:rgba(220,38,38,0.15);
+      border:1px solid rgba(220,38,38,0.25);
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;
+      color:#dc2626;
+    }
+
+    /* HERO BG GLOW */
+    .hero-glow {
+      position:absolute;
+      bottom:0; left:50%;
+      transform:translateX(-50%);
+      width:800px; height:400px;
+      background:radial-gradient(ellipse at 50% 100%, rgba(220,38,38,0.35) 0%, transparent 70%);
+      pointer-events:none;
+    }
+  </style>
+</head>
+<body class="antialiased overflow-x-hidden selection:bg-red-600 selection:text-white">
+
+  <div id="c-dot"></div>
+  <div id="c-ring"></div>
+  <div class="scanlines"></div>
+
+  <!-- NAV -->
+  <header id="site-header" class="fixed top-3 inset-x-0 z-50 px-3 sm:px-6 flex justify-center">
+    <nav class="w-full max-w-7xl bg-black/85 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl">
+      <div class="px-5 sm:px-7 py-3.5 flex items-center justify-between">
+        <a href="index.html" class="flex items-center shrink-0">
+          <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-9 w-auto">
+        </a>
+        <div class="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-widest text-white/60">
+          <a href="index.html"      class="nav-link hover:text-white transition">Home</a>
+          <a href="index.html#about" class="nav-link hover:text-white transition">About Us</a>
+          <a href="menu.html"       class="nav-link hover:text-white transition">Menu</a>
+          <a href="reserve.html" class="nav-link hover:text-white transition">Events</a>
+          <a href="gallery.html"    class="nav-link hover:text-white transition">Gallery</a>
+          <a href="contact.html"    class="nav-link active hover:text-white transition">Contact</a>
+        </div>
+        <div class="flex items-center gap-3">
+          <a href="reserve.html" class="hidden sm:inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-[11px] uppercase tracking-widest font-semibold px-5 py-2.5 rounded-xl">
+            Reserve a Table
+            <iconify-icon icon="solar:arrow-right-linear" width="13"></iconify-icon>
+          </a>
+          <button id="nav-toggle" aria-label="Toggle menu" class="lg:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5 rounded-lg border border-white/15 hover:border-red-500 transition">
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+          </button>
+        </div>
+      </div>
+      <div id="mobile-menu" class="lg:hidden border-t border-white/8">
+        <div class="px-5 py-5 flex flex-col gap-1">
+          <a href="index.html"       class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Home</a>
+          <a href="index.html#about" class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">About Us</a>
+          <a href="menu.html"        class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Menu</a>
+          <a href="reserve.html" class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Events</a>
+          <a href="gallery.html"     class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Gallery</a>
+          <a href="contact.html"     class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white hover:bg-white/5 uppercase tracking-widest transition">Contact</a>
+          <div class="mt-3 pt-3 border-t border-white/10">
+            <a href="reserve.html" class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-sm uppercase tracking-widest font-semibold px-5 py-3 rounded-xl">
+              Reserve a Table
+              <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="relative pt-36 pb-20 overflow-hidden">
+    <div class="absolute inset-0 grain opacity-50 pointer-events-none"></div>
+    <div class="hero-glow"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 text-center rise">
+      <p class="font-serif-it text-red-400 text-xl sm:text-2xl mb-4">Let's talk —</p>
+      <h1 class="font-display text-white leading-none tracking-tight" style="font-size:clamp(72px,14vw,220px)">
+        CONTACT<br><span class="text-red-600">US</span>
+      </h1>
+      <p class="mt-6 max-w-lg mx-auto text-sm sm:text-base text-white/55">
+        Questions, reservations, private events — we'd love to hear from you.
+        Drop us a line and we'll get back to you within 24 hours.
+      </p>
+    </div>
+
+    <!-- breadcrumb -->
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 mt-10 flex items-center justify-center gap-2 text-[11px] uppercase tracking-widest text-white/35">
+      <a href="index.html" class="hover:text-red-400 transition">Home</a>
+      <iconify-icon icon="solar:alt-arrow-right-linear" width="12"></iconify-icon>
+      <span class="text-red-400">Contact</span>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <section class="pb-28 px-4 sm:px-6 relative">
+    <div class="absolute inset-0 grain opacity-25 pointer-events-none"></div>
+    <div class="relative max-w-7xl mx-auto">
+
+      <div class="grid lg:grid-cols-5 gap-10 xl:gap-16 items-start">
+
+        <!-- LEFT — Info -->
+        <div class="lg:col-span-2 reveal-me from-left">
+
+          <p class="text-xs uppercase tracking-[0.3em] text-red-500 mb-3">— Reach Out</p>
+          <h2 class="font-display text-5xl sm:text-6xl text-white tracking-tight leading-none mb-4">
+            GET IN<br>TOUCH
+          </h2>
+          <p class="text-sm text-white/55 leading-relaxed mb-10 max-w-sm">
+            Whether you're planning a night out, a private event, or just want to know tonight's fish — our team is here.
+          </p>
+
+          <!-- Info cards -->
+          <div class="space-y-4">
+
+            <div class="info-card">
+              <div class="info-icon">
+                <iconify-icon icon="solar:map-point-linear" width="20"></iconify-icon>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-widest text-white/40 mb-1">Address</p>
+                <p class="text-white text-sm font-medium leading-relaxed">2nd Parklands Avenue<br>Nairobi 00100, Kenya</p>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-icon">
+                <iconify-icon icon="solar:phone-linear" width="20"></iconify-icon>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-widest text-white/40 mb-1">Phone</p>
+                <a href="tel:2319441733" class="text-white text-sm font-medium hover:text-red-400 transition">(231) 944-1733</a>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-icon">
+                <iconify-icon icon="solar:letter-linear" width="20"></iconify-icon>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-widest text-white/40 mb-1">Email</p>
+                <a href="mailto:hello@redgingertc.com" class="text-white text-sm font-medium hover:text-red-400 transition">hello@redgingertc.com</a>
+                <br>
+                <a href="mailto:events@redgingertc.com" class="text-white/60 text-sm hover:text-red-400 transition">events@redgingertc.com</a>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-icon">
+                <iconify-icon icon="solar:clock-circle-linear" width="20"></iconify-icon>
+              </div>
+              <div>
+                <p class="text-xs uppercase tracking-widest text-white/40 mb-1">Hours</p>
+                <p class="text-white text-sm font-medium">Tue — Sat · 4:00 — 22:00</p>
+                <p class="text-white/50 text-xs mt-0.5">Closed Sun &amp; Mon</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Divider -->
+          <div class="mt-10 pt-8 border-t border-white/10">
+            <p class="text-xs uppercase tracking-widest text-white/40 mb-4">Follow Us</p>
+            <div class="flex items-center gap-3">
+              <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:bg-red-600 text-white/60 hover:text-white transition flex items-center justify-center">
+                <iconify-icon icon="solar:instagram-linear" width="18"></iconify-icon>
+              </a>
+              <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:bg-red-600 text-white/60 hover:text-white transition flex items-center justify-center">
+                <iconify-icon icon="solar:tiktok-linear" width="18"></iconify-icon>
+              </a>
+              <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:bg-red-600 text-white/60 hover:text-white transition flex items-center justify-center">
+                <iconify-icon icon="solar:facebook-linear" width="18"></iconify-icon>
+              </a>
+            </div>
+          </div>
+
+          <!-- Italic quote -->
+          <div class="mt-10 flex items-center gap-3">
+            <iconify-icon icon="solar:fire-bold" class="text-red-600 flicker shrink-0" width="24"></iconify-icon>
+            <span class="font-serif-it text-white/50 text-lg">Sushi · Craft · Repeat</span>
+          </div>
+
+        </div>
+
+        <!-- RIGHT — Form -->
+        <div class="lg:col-span-3 reveal-me from-right">
+
+          <div class="bg-black/50 backdrop-blur border border-white/10 rounded-2xl p-8 sm:p-10 relative overflow-hidden">
+            <!-- subtle red corner glow -->
+            <div class="absolute -top-20 -right-20 w-64 h-64 bg-red-700/15 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative">
+              <p class="text-xs uppercase tracking-[0.3em] text-red-500 mb-2">— Message Us</p>
+              <h2 class="font-display text-4xl sm:text-5xl text-white leading-none mb-2">YOUR<br>DETAILS</h2>
+              <p class="text-sm text-white/45 mb-8">Let us know how to get back to you.</p>
+
+              <form id="contact-form" novalidate class="space-y-5">
+
+                <!-- Name + Email -->
+                <div class="grid sm:grid-cols-2 gap-5">
+                  <div>
+                    <label class="block text-[11px] uppercase tracking-widest text-white/50 mb-2">
+                      Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="name" placeholder="Your name" class="form-input" required>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] uppercase tracking-widest text-white/50 mb-2">
+                      Email Address <span class="text-red-500">*</span>
+                    </label>
+                    <input type="email" name="email" placeholder="you@example.com" class="form-input" required>
+                  </div>
+                </div>
+
+                <!-- Phone + Subject -->
+                <div class="grid sm:grid-cols-2 gap-5">
+                  <div>
+                    <label class="block text-[11px] uppercase tracking-widest text-white/50 mb-2">Phone</label>
+                    <input type="tel" name="phone" placeholder="(231) 000-0000" class="form-input">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] uppercase tracking-widest text-white/50 mb-2">
+                      Subject <span class="text-red-500">*</span>
+                    </label>
+                    <select name="subject" class="form-input" required style="appearance:none;-webkit-appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff44' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 16px center;padding-right:42px;">
+                      <option value="" disabled selected style="background:#0b0708">Select a subject…</option>
+                      <option value="reservation" style="background:#0b0708">Reservation Enquiry</option>
+                      <option value="private-event" style="background:#0b0708">Private Event</option>
+                      <option value="general" style="background:#0b0708">General Question</option>
+                      <option value="feedback" style="background:#0b0708">Feedback</option>
+                      <option value="press" style="background:#0b0708">Press / Media</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Message -->
+                <div>
+                  <label class="block text-[11px] uppercase tracking-widest text-white/50 mb-2">
+                    Comments / Questions <span class="text-red-500">*</span>
+                  </label>
+                  <textarea name="message" placeholder="Tell us what's on your mind…" class="form-input" required></textarea>
+                </div>
+
+                <!-- Submit -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
+                  <p class="text-xs text-white/30">
+                    We respond within 24 hours during business hours.
+                  </p>
+                  <button type="submit" id="submit-btn" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-[11px] uppercase tracking-widest font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-red-900/30 shrink-0">
+                    <iconify-icon icon="solar:paper-plane-linear" width="16"></iconify-icon>
+                    Send Message
+                  </button>
+                </div>
+
+                <!-- Success toast (hidden by default) -->
+                <div id="form-success" class="hidden items-center gap-3 bg-green-950 border border-green-700/50 text-green-300 rounded-xl px-5 py-4 text-sm">
+                  <iconify-icon icon="solar:check-circle-linear" width="20"></iconify-icon>
+                  <span>Message sent! We'll be in touch within 24 hours.</span>
+                </div>
+
+              </form>
+            </div>
+          </div>
+
+          <!-- Map placeholder card -->
+          <div class="mt-5 relative rounded-2xl overflow-hidden border border-white/10 group" style="height:220px;">
+            <img
+              src="https://images.unsplash.com/photo-1569336415962-a4bd9f69c912?w=1200&q=80"
+              alt="Nairobi, Kenya"
+              class="w-full h-full object-cover opacity-50 group-hover:opacity-65 group-hover:scale-105 transition duration-700"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+              <div class="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center mb-3 shadow-lg shadow-red-900/50">
+                <iconify-icon icon="solar:map-point-bold" width="18" class="text-white"></iconify-icon>
+              </div>
+              <p class="font-display text-2xl text-white tracking-tight">Nairobi, Kenya</p>
+              <p class="text-white/50 text-xs uppercase tracking-widest mt-1">2nd Parklands Avenue, 00100</p>
+              <a href="https://maps.google.com/?q=2nd+Parklands+Avenue+Nairobi+Kenya" target="_blank" rel="noopener noreferrer"
+                class="mt-4 inline-flex items-center gap-1.5 text-red-400 hover:text-white text-xs uppercase tracking-widest transition">
+                Open in Maps
+                <iconify-icon icon="solar:arrow-right-up-linear" width="12"></iconify-icon>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK CONTACT STRIP -->
+  <section class="border-t border-white/10 bg-neutral-950 py-14 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8">
+
+      <div class="text-center lg:text-left">
+        <p class="font-serif-it text-red-400 text-lg mb-1">Rather call?</p>
+        <h3 class="font-display text-4xl sm:text-5xl text-white tracking-tight leading-none">
+          WE'RE HERE <span class="text-red-600">TUE – SAT</span>
+        </h3>
+        <p class="text-sm text-white/50 mt-2">4:00 PM — 10:00 PM · (231) 944-1733</p>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <a href="tel:2319441733" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-sm uppercase tracking-widest font-semibold px-7 py-3.5 rounded-xl shadow-lg shadow-red-900/30">
+          <iconify-icon icon="solar:phone-linear" width="18"></iconify-icon>
+          Call Now
+        </a>
+        <a href="reserve.html" class="inline-flex items-center gap-2 border border-white/20 hover:bg-white/5 transition text-white text-sm uppercase tracking-widest font-semibold px-7 py-3.5 rounded-xl">
+          <iconify-icon icon="solar:calendar-linear" width="18"></iconify-icon>
+          Reserve a Table
+        </a>
+        <a href="mailto:events@redgingertc.com" class="inline-flex items-center gap-2 border border-white/20 hover:border-red-500 hover:bg-white/5 transition text-white/70 hover:text-white text-sm uppercase tracking-widest font-semibold px-7 py-3.5 rounded-xl">
+          <iconify-icon icon="solar:letter-linear" width="18"></iconify-icon>
+          Email Events
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-black border-t border-white/10 px-4 sm:px-6 py-10">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center">
+        <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-10 w-auto">
+      </div>
+      <p class="text-xs uppercase tracking-widest text-white/40">© 2024 Red Ginger · Nairobi, Kenya</p>
+      <div class="flex items-center gap-3">
+        <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+          <iconify-icon icon="solar:instagram-linear" width="18"></iconify-icon>
+        </a>
+        <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+          <iconify-icon icon="solar:tiktok-linear" width="18"></iconify-icon>
+        </a>
+        <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+          <iconify-icon icon="solar:facebook-linear" width="18"></iconify-icon>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+
+    /* CUSTOM CURSOR */
+    var dot  = document.getElementById('c-dot');
+    var ring = document.getElementById('c-ring');
+    var mx = -100, my = -100, rx = -100, ry = -100;
+    document.addEventListener('mousemove', function (e) {
+      mx = e.clientX; my = e.clientY;
+      dot.style.transform = 'translate(' + (mx - 4) + 'px,' + (my - 4) + 'px)';
+    });
+    (function ringLoop() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.transform = 'translate(' + (rx - 19) + 'px,' + (ry - 19) + 'px)';
+      requestAnimationFrame(ringLoop);
+    })();
+    document.querySelectorAll('a, button, input, textarea, select').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { document.body.classList.add('cursor-hover'); });
+      el.addEventListener('mouseleave', function () { document.body.classList.remove('cursor-hover'); });
+    });
+
+    /* NAV HIDE ON SCROLL */
+    var siteHeader  = document.getElementById('site-header');
+    var lastScrollY = 0;
+    window.addEventListener('scroll', function () {
+      var current = window.scrollY;
+      if (current > lastScrollY && current > 100) {
+        siteHeader.classList.add('nav-hidden');
+      } else {
+        siteHeader.classList.remove('nav-hidden');
+      }
+      lastScrollY = current <= 0 ? 0 : current;
+    });
+
+    /* MOBILE MENU */
+    var navToggle  = document.getElementById('nav-toggle');
+    var mobileMenu = document.getElementById('mobile-menu');
+    var hamLines   = navToggle ? navToggle.querySelectorAll('.ham-line') : [];
+    var menuOpen   = false;
+    function setMenu(open) {
+      menuOpen = open;
+      mobileMenu.classList.toggle('open', open);
+      if (hamLines.length === 3) {
+        if (open) {
+          hamLines[0].style.transform = 'translateY(6px) rotate(45deg)';
+          hamLines[1].style.opacity   = '0';
+          hamLines[2].style.transform = 'translateY(-6px) rotate(-45deg)';
+        } else {
+          hamLines[0].style.transform = '';
+          hamLines[1].style.opacity   = '';
+          hamLines[2].style.transform = '';
+        }
+      }
+    }
+    if (navToggle) navToggle.addEventListener('click', function () { setMenu(!menuOpen); });
+    document.querySelectorAll('.mobile-nav-link').forEach(function (l) {
+      l.addEventListener('click', function () { setMenu(false); });
+    });
+    document.addEventListener('click', function (e) {
+      if (menuOpen && siteHeader && !siteHeader.contains(e.target)) setMenu(false);
+    });
+
+    /* SCROLL REVEAL */
+    var revealTargets = document.querySelectorAll('.reveal-me');
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px 60px 0px' });
+    revealTargets.forEach(function (el) { obs.observe(el); });
+    setTimeout(function () {
+      revealTargets.forEach(function (el) { el.classList.add('revealed'); });
+    }, 1500);
+
+    /* MAGNETIC BUTTONS */
+    document.querySelectorAll('a.inline-flex, button.inline-flex').forEach(function (btn) {
+      btn.addEventListener('mousemove', function (e) {
+        var r  = btn.getBoundingClientRect();
+        var dx = e.clientX - (r.left + r.width  / 2);
+        var dy = e.clientY - (r.top  + r.height / 2);
+        btn.style.transform  = 'translate(' + (dx * 0.22) + 'px,' + (dy * 0.22) + 'px)';
+        btn.style.transition = 'transform .08s ease';
+      });
+      btn.addEventListener('mouseleave', function () {
+        btn.style.transition = 'transform .5s cubic-bezier(.34,1.56,.64,1)';
+        btn.style.transform  = '';
+      });
+    });
+
+    /* RIPPLE */
+    document.querySelectorAll('a.bg-red-600, button.bg-red-600').forEach(function (btn) {
+      btn.style.overflow = 'hidden';
+      btn.addEventListener('click', function (e) {
+        var wave = document.createElement('span');
+        var r    = btn.getBoundingClientRect();
+        var size = Math.max(r.width, r.height) * 2.5;
+        wave.className     = 'ripple-wave';
+        wave.style.cssText = 'width:' + size + 'px;height:' + size + 'px;'
+          + 'left:' + (e.clientX - r.left - size / 2) + 'px;'
+          + 'top:'  + (e.clientY - r.top  - size / 2) + 'px;';
+        btn.appendChild(wave);
+        setTimeout(function () { wave.remove(); }, 700);
+      });
+    });
+
+    /* FORM — demo submission */
+    var form    = document.getElementById('contact-form');
+    var success = document.getElementById('form-success');
+    var submitBtn = document.getElementById('submit-btn');
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var valid = true;
+        form.querySelectorAll('[required]').forEach(function (field) {
+          if (!field.value.trim()) {
+            valid = false;
+            field.style.borderColor = '#dc2626';
+          } else {
+            field.style.borderColor = '';
+          }
+        });
+        if (!valid) return;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<iconify-icon icon="solar:refresh-linear" width="16" style="animation:spin 1s linear infinite"></iconify-icon> Sending…';
+        var style = document.createElement('style');
+        style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+        document.head.appendChild(style);
+        setTimeout(function () {
+          form.reset();
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<iconify-icon icon="solar:paper-plane-linear" width="16"></iconify-icon> Send Message';
+          success.classList.remove('hidden');
+          success.classList.add('flex');
+          setTimeout(function () {
+            success.classList.add('hidden');
+            success.classList.remove('flex');
+          }, 5000);
+        }, 1400);
+      });
+      /* clear red border on input */
+      form.querySelectorAll('.form-input').forEach(function (field) {
+        field.addEventListener('input', function () { field.style.borderColor = ''; });
+      });
+    }
+
+  })();
+  </script>
+
+</body>
+</html>

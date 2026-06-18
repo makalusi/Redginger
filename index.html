@@ -91,7 +91,7 @@ setPaused(event.data.paused);
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RED GINGER — Pan-Asian Cuisine · Traverse City, MI</title>
+<title>RED GINGER — Pan-Asian Cuisine · Nairobi, Kenya</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,6 +99,7 @@ setPaused(event.data.paused);
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 body { font-family: 'DM Sans', sans-serif; background:#0b0708; color:#f4ede4; }
+body.lb-open { overflow:hidden; }
 .font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: -0.01em; }
 .font-serif-it { font-family: 'Instrument Serif', serif; font-style: italic; }
 @keyframes scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
@@ -119,7 +120,7 @@ body { font-family: 'DM Sans', sans-serif; background:#0b0708; color:#f4ede4; }
     .cursor-hover #c-ring{width:56px;height:56px;border-color:#dc2626;box-shadow:0 0 14px rgba(220,38,38,.5);}
 
     /* ---- EMBER CANVAS ---- */
-    #ember-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;opacity:.5;}
+    #ember-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;opacity:.5;}
 
     /* ---- SCANLINES ---- */
     .scanlines{position:fixed;inset:0;pointer-events:none;z-index:9997;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);}
@@ -160,6 +161,19 @@ body { font-family: 'DM Sans', sans-serif; background:#0b0708; color:#f4ede4; }
     header nav{animation:nav-breathe 4s ease-in-out infinite;}
     @keyframes nav-breathe{0%,100%{box-shadow:0 8px 32px rgba(0,0,0,.6);}50%{box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(220,38,38,.15);}}
 
+    /* ---- NAV HIDE ON SCROLL ---- */
+    header{transition:transform .42s cubic-bezier(.4,0,.2,1);}
+    header.nav-hidden{transform:translateY(-130%);}
+
+    /* ---- MOBILE MENU ---- */
+    #mobile-menu{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .3s ease;}
+    #mobile-menu.open{max-height:420px;}
+
+    /* ---- NAV LINK ACTIVE ---- */
+    .nav-link{position:relative;}
+    .nav-link::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:#dc2626;transition:width .25s ease;}
+    .nav-link:hover::after,.nav-link.active::after{width:100%;}
+
     /* ---- FLAME PULSE ---- */
     .flame-grad{animation:flame-pulse 3s ease-in-out infinite;}
     @keyframes flame-pulse{0%,100%{opacity:.7;}50%{opacity:1;}}
@@ -170,6 +184,25 @@ body { font-family: 'DM Sans', sans-serif; background:#0b0708; color:#f4ede4; }
 
     /* ---- MARQUEE PAUSE ON HOVER ---- */
     .animate-marquee:hover{animation-play-state:paused;}
+
+    /* ---- GALLERY MASONRY ---- */
+    .gallery-masonry{columns:2;column-gap:8px;}
+    @media(min-width:640px){.gallery-masonry{columns:3;column-gap:10px;}}
+    @media(min-width:1024px){.gallery-masonry{columns:4;column-gap:12px;}}
+    .gallery-item{break-inside:avoid;margin-bottom:8px;display:block;position:relative;overflow:hidden;border-radius:12px;cursor:pointer;}
+    @media(min-width:640px){.gallery-item{margin-bottom:10px;}}
+    @media(min-width:1024px){.gallery-item{margin-bottom:12px;}}
+    .gallery-item img{width:100%;height:auto;display:block;transition:transform .7s cubic-bezier(.22,1,.36,1);}
+    .gallery-item:hover img{transform:scale(1.1);}
+    .gallery-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72) 0%,rgba(0,0,0,.18) 55%,transparent 100%);opacity:0;transition:opacity .4s ease;}
+    .gallery-item:hover .gallery-overlay{opacity:1;}
+    .gallery-redline{position:absolute;top:0;left:0;right:0;height:2px;background:#dc2626;transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.22,1,.36,1);}
+    .gallery-item:hover .gallery-redline{transform:scaleX(1);}
+
+    /* ---- LIGHTBOX ---- */
+    #gallery-lb{display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.96);backdrop-filter:blur(10px);flex-direction:column;align-items:center;justify-content:center;}
+    #gallery-lb.open{display:flex;}
+    #lb-img{max-height:75vh;max-width:calc(100vw - 120px);width:auto;height:auto;object-fit:contain;border-radius:16px;box-shadow:0 40px 80px rgba(0,0,0,.8);}
 </style><!-- aura-ga4-start -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2M6V79H761"></script>
 <script>
@@ -181,31 +214,69 @@ gtag('config', 'G-2M6V79H761');
 <!-- aura-ga4-end -->
 </head>
   <body class="antialiased overflow-x-hidden selection:bg-red-600 selection:text-white">
-    <canvas id="ember-canvas"></canvas>
     <div id="c-dot"></div>
     <div id="c-ring"></div>
     <div class="scanlines"></div>
     <!-- NAV -->
-    <header class="fixed top-3 inset-x-0 z-50 px-3 sm:px-6 flex justify-center">
-      <nav class="w-full max-w-7xl bg-black/80 backdrop-blur border border-white/10 rounded-xl px-4 sm:px-6 py-3 flex items-center justify-between shadow-2xl">
-        <a href="#" class="flex items-center">
-          <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-10 w-auto">
-        </a>
-        <div class="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest text-white/70">
-          <a href="#burgers" class="hover:text-white transition">Small Plates</a>
-          <a href="#hotdogs" class="hover:text-white transition">Sushi</a>
-          <a href="menu.html" class="hover:text-white transition">Menu</a>
-          <a href="#contact" class="hover:text-white transition">Contact</a>
+    <header id="site-header" class="fixed top-3 inset-x-0 z-50 px-3 sm:px-6 flex justify-center">
+      <nav class="w-full max-w-7xl bg-black/85 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl">
+
+        <!-- Main bar -->
+        <div class="px-5 sm:px-7 py-3.5 flex items-center justify-between">
+          <!-- Logo -->
+          <a href="#home" class="flex items-center shrink-0">
+            <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-9 w-auto">
+          </a>
+
+          <!-- Desktop links -->
+          <div class="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-widest text-white/60">
+            <a href="#home"    class="nav-link hover:text-white transition">Home</a>
+            <a href="#about"   class="nav-link hover:text-white transition">About Us</a>
+            <a href="menu.html" class="nav-link hover:text-white transition">Menu</a>
+            <a href="reserve.html" class="nav-link hover:text-white transition">Events</a>
+            <a href="gallery.html" class="nav-link hover:text-white transition">Gallery</a>
+            <a href="contact.html" class="nav-link hover:text-white transition">Contact</a>
+          </div>
+
+          <!-- Desktop CTA + mobile hamburger -->
+          <div class="flex items-center gap-3">
+            <a href="reserve.html" class="hidden sm:inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-[11px] uppercase tracking-widest font-semibold px-5 py-2.5 rounded-xl">
+              Reserve a Table
+              <iconify-icon icon="solar:arrow-right-linear" width="13"></iconify-icon>
+            </a>
+            <!-- Hamburger — visible below lg -->
+            <button id="nav-toggle" aria-label="Toggle menu" class="lg:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5 rounded-lg border border-white/15 hover:border-red-500 transition">
+              <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+              <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+              <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+            </button>
+          </div>
         </div>
-        <a href="reserve.html" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-xs uppercase tracking-widest font-semibold px-4 py-2 rounded-lg">
-          Reserve
-          <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
-        </a>
+
+        <!-- Mobile dropdown -->
+        <div id="mobile-menu" class="lg:hidden border-t border-white/8">
+          <div class="px-5 py-5 flex flex-col gap-1">
+            <a href="#home"    class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Home</a>
+            <a href="#about"   class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">About Us</a>
+            <a href="menu.html" class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Menu</a>
+            <a href="reserve.html" class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Events</a>
+            <a href="gallery.html" class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Gallery</a>
+            <a href="contact.html" class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Contact</a>
+            <div class="mt-3 pt-3 border-t border-white/10">
+              <a href="reserve.html" class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-sm uppercase tracking-widest font-semibold px-5 py-3 rounded-xl">
+                Reserve a Table
+                <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+              </a>
+            </div>
+          </div>
+        </div>
+
       </nav>
     </header>
 
     <!-- HERO -->
-    <section class="relative min-h-screen pt-32 pb-16 overflow-hidden">
+    <section id="home" class="relative min-h-screen pt-32 pb-16 overflow-hidden">
+      <canvas id="ember-canvas"></canvas>
       <div class="absolute inset-0 grain opacity-60"></div>
       <div class="absolute inset-x-0 bottom-0 h-2/3 flame-grad pointer-events-none"></div>
 
@@ -214,7 +285,7 @@ gtag('config', 'G-2M6V79H761');
         <div class="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-white/50 mb-10 rise">
           <span class="flex items-center gap-2">
             <span class="w-1.5 h-1.5 rounded-full bg-red-500 flicker"></span>
-            Traverse City · MI
+            Nairobi · Kenya
           </span>
           <span class="hidden sm:block">Est. — Pan-Asian Cuisine</span>
           <span class="hidden md:flex items-center gap-2">
@@ -237,7 +308,7 @@ gtag('config', 'G-2M6V79H761');
             <p class="mt-6 max-w-xl text-sm sm:text-base text-white/65">
               Japanese, Thai, Vietnamese and Korean influences, woven into one
               inspired menu. Signature sushi, small plates, and vibrant large plates —
-              in the heart of Traverse City.
+              in the heart of Nairobi.
             </p>
 
             <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -298,7 +369,7 @@ gtag('config', 'G-2M6V79H761');
           <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
           <span>THAI CURRY</span>
           <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
-          <span>TRAVERSE CITY</span>
+          <span>NAIROBI</span>
           <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
           <span>PAN-ASIAN</span>
           <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
@@ -310,7 +381,7 @@ gtag('config', 'G-2M6V79H761');
           <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
           <span>THAI CURRY</span>
           <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
-          <span>TRAVERSE CITY</span>
+          <span>NAIROBI</span>
           <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
           <span>PAN-ASIAN</span>
           <iconify-icon icon="solar:fire-bold" class="text-red-600" width="28"></iconify-icon>
@@ -319,7 +390,7 @@ gtag('config', 'G-2M6V79H761');
     </section>
 
     <!-- FEATURED DISHES -->
-    <section class="py-20 px-4 sm:px-6 relative overflow-hidden">
+    <section id="featured" class="py-20 px-4 sm:px-6 relative overflow-hidden">
       <div class="absolute inset-0 grain opacity-40"></div>
       <div class="relative max-w-7xl mx-auto">
         <!-- heading row -->
@@ -331,7 +402,7 @@ gtag('config', 'G-2M6V79H761');
             </h2>
           </div>
           <p class="text-sm text-white/55 max-w-xs">
-            Three reasons guests keep coming back — fire, craft, and the freshest fish in Traverse City.
+            Three reasons guests keep coming back — fire, craft, and the freshest fish in Nairobi.
           </p>
         </div>
 
@@ -669,7 +740,7 @@ gtag('config', 'G-2M6V79H761');
     </section>
 
     <!-- SPECIAL OCCASIONS -->
-    <section class="py-24 px-4 sm:px-6 bg-neutral-950 relative overflow-hidden">
+    <section id="events" class="py-24 px-4 sm:px-6 bg-neutral-950 relative overflow-hidden">
       <div class="absolute inset-0 grain opacity-20 pointer-events-none"></div>
       <div class="absolute right-0 top-1/3 w-96 h-96 bg-red-700/15 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -770,7 +841,7 @@ gtag('config', 'G-2M6V79H761');
     </section>
 
     <!-- CHEF / OUR STORY -->
-    <section class="border-y border-white/10 bg-neutral-950 py-24 px-4 sm:px-6 overflow-hidden relative">
+    <section id="about" class="border-y border-white/10 bg-neutral-950 py-24 px-4 sm:px-6 overflow-hidden relative">
       <div class="absolute inset-0 grain opacity-20 pointer-events-none"></div>
       <div class="absolute left-0 bottom-0 w-[500px] h-[500px] bg-red-800/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -958,7 +1029,7 @@ gtag('config', 'G-2M6V79H761');
             <span class="text-red-600">THE CRAFT</span>
           </h2>
           <p class="mt-6 max-w-md text-sm text-white/65">
-            Red Ginger awaits in Traverse City. Sushi, small plates, and bold
+            Red Ginger awaits in Nairobi. Sushi, small plates, and bold
             Asian mains — crafted nightly with the freshest ingredients.
           </p>
           <div class="mt-10 flex flex-wrap gap-3">
@@ -981,9 +1052,9 @@ gtag('config', 'G-2M6V79H761');
                 Address
               </p>
               <p class="text-white text-sm leading-relaxed">
-                Traverse City
+                2nd Parklands Avenue
                 <br>
-                Michigan, USA
+                Nairobi, Kenya
               </p>
             </div>
             <div>
@@ -1026,7 +1097,7 @@ gtag('config', 'G-2M6V79H761');
           <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-10 w-auto">
         </div>
         <p class="text-xs uppercase tracking-widest text-white/40">
-          © 2024 Red Ginger · Traverse City, MI
+          © 2024 Red Ginger · Nairobi, Kenya
         </p>
         <div class="flex items-center gap-3">
           <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
@@ -1069,7 +1140,7 @@ gtag('config', 'G-2M6V79H761');
     /* ===================== FIRE EMBERS (CANVAS) ===================== */
     var canvas = document.getElementById('ember-canvas');
     var ctx    = canvas.getContext('2d');
-    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
     resize();
     window.addEventListener('resize', resize);
 
@@ -1272,6 +1343,77 @@ gtag('config', 'G-2M6V79H761');
         btn.appendChild(wave);
         setTimeout(function () { wave.remove(); }, 700);
       });
+    });
+
+    /* ===================== NAV: HIDE ON SCROLL DOWN, SHOW ON SCROLL UP ===================== */
+    var siteHeader   = document.getElementById('site-header');
+    var lastScrollY  = 0;
+    var scrollTicking = false;
+    window.addEventListener('scroll', function () {
+      if (!scrollTicking) {
+        window.requestAnimationFrame(function () {
+          var current = window.scrollY;
+          if (current > lastScrollY && current > 100) {
+            siteHeader.classList.add('nav-hidden');
+          } else {
+            siteHeader.classList.remove('nav-hidden');
+          }
+          lastScrollY = current <= 0 ? 0 : current;
+          scrollTicking = false;
+        });
+        scrollTicking = true;
+      }
+    });
+
+    /* ===================== NAV: ACTIVE LINK HIGHLIGHT ===================== */
+    var navLinks = document.querySelectorAll('.nav-link');
+    var sectionIds = ['home','about','gallery','events','contact'];
+    var sectionActiveObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var id = entry.target.id;
+          navLinks.forEach(function (link) {
+            var href = (link.getAttribute('href') || '').replace('#','');
+            link.classList.toggle('active', href === id);
+          });
+        }
+      });
+    }, { threshold: 0.35 });
+    sectionIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) sectionActiveObs.observe(el);
+    });
+
+    /* ===================== MOBILE MENU TOGGLE ===================== */
+    var navToggle  = document.getElementById('nav-toggle');
+    var mobileMenu = document.getElementById('mobile-menu');
+    var hamLines   = navToggle ? navToggle.querySelectorAll('.ham-line') : [];
+    var menuOpen   = false;
+
+    function setMenu(open) {
+      menuOpen = open;
+      mobileMenu.classList.toggle('open', open);
+      if (hamLines.length === 3) {
+        if (open) {
+          hamLines[0].style.transform = 'translateY(6px) rotate(45deg)';
+          hamLines[1].style.opacity   = '0';
+          hamLines[2].style.transform = 'translateY(-6px) rotate(-45deg)';
+        } else {
+          hamLines[0].style.transform = '';
+          hamLines[1].style.opacity   = '';
+          hamLines[2].style.transform = '';
+        }
+      }
+    }
+
+    if (navToggle) {
+      navToggle.addEventListener('click', function () { setMenu(!menuOpen); });
+    }
+    document.querySelectorAll('.mobile-nav-link').forEach(function (link) {
+      link.addEventListener('click', function () { setMenu(false); });
+    });
+    document.addEventListener('click', function (e) {
+      if (menuOpen && siteHeader && !siteHeader.contains(e.target)) { setMenu(false); }
     });
 
   })();

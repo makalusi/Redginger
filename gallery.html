@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery — RED GINGER · Pan-Asian Cuisine · Nairobi, Kenya</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'DM Sans', sans-serif; background:#0b0708; color:#f4ede4; }
+body.lb-open { overflow:hidden; }
+.font-display { font-family: 'Bebas Neue', sans-serif; letter-spacing: -0.01em; }
+.font-serif-it { font-family: 'Instrument Serif', serif; font-style: italic; }
+@keyframes scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+.animate-marquee { animation: scroll 30s linear infinite; }
+.grain { background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 3px 3px; }
+.flame-grad { background: radial-gradient(ellipse at 50% 100%, rgba(232,65,24,0.55) 0%, rgba(232,65,24,0.15) 35%, transparent 70%); }
+@keyframes flicker { 0%,100%{opacity:.85; transform:scale(1)} 50%{opacity:1; transform:scale(1.04)} }
+.flicker { animation: flicker 2.4s ease-in-out infinite; }
+
+    /* ---- CURSOR ---- */
+    body{cursor:none;}
+    #c-dot,#c-ring{position:fixed;top:0;left:0;border-radius:50%;pointer-events:none;z-index:9999;will-change:transform;}
+    #c-dot{width:8px;height:8px;background:#dc2626;box-shadow:0 0 12px #dc2626,0 0 28px rgba(220,38,38,.5);}
+    #c-ring{width:38px;height:38px;border:1.5px solid rgba(220,38,38,.55);transition:width .22s,height .22s,border-color .22s;}
+    .cursor-hover #c-ring{width:56px;height:56px;border-color:#dc2626;box-shadow:0 0 14px rgba(220,38,38,.5);}
+
+    /* ---- SCANLINES ---- */
+    .scanlines{position:fixed;inset:0;pointer-events:none;z-index:9997;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);}
+
+    /* ---- NAV BREATHE ---- */
+    header nav{animation:nav-breathe 4s ease-in-out infinite;}
+    @keyframes nav-breathe{0%,100%{box-shadow:0 8px 32px rgba(0,0,0,.6);}50%{box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(220,38,38,.15);}}
+
+    /* ---- NAV HIDE ON SCROLL ---- */
+    header{transition:transform .42s cubic-bezier(.4,0,.2,1);}
+    header.nav-hidden{transform:translateY(-130%);}
+
+    /* ---- MOBILE MENU ---- */
+    #mobile-menu{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1),opacity .3s ease;}
+    #mobile-menu.open{max-height:420px;}
+
+    /* ---- NAV LINK ACTIVE ---- */
+    .nav-link{position:relative;}
+    .nav-link::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:#dc2626;transition:width .25s ease;}
+    .nav-link:hover::after,.nav-link.active::after{width:100%;}
+
+    /* ---- RIPPLE ---- */
+    .ripple-wave{position:absolute;border-radius:50%;background:rgba(255,255,255,.2);transform:scale(0);animation:ripple-go .65s ease-out forwards;pointer-events:none;}
+    @keyframes ripple-go{to{transform:scale(4);opacity:0;}}
+
+    /* ---- SCROLL REVEAL ---- */
+    .reveal-me{opacity:0;transform:translateY(44px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1);}
+    .reveal-me.revealed{opacity:1 !important;transform:none !important;}
+
+    /* ---- GALLERY MASONRY ---- */
+    .gallery-masonry{columns:2;column-gap:8px;}
+    @media(min-width:640px){.gallery-masonry{columns:3;column-gap:10px;}}
+    @media(min-width:1024px){.gallery-masonry{columns:4;column-gap:12px;}}
+    .gallery-item{break-inside:avoid;margin-bottom:8px;display:block;position:relative;overflow:hidden;border-radius:12px;cursor:pointer;}
+    @media(min-width:640px){.gallery-item{margin-bottom:10px;}}
+    @media(min-width:1024px){.gallery-item{margin-bottom:12px;}}
+    .gallery-item img{width:100%;height:auto;display:block;transition:transform .7s cubic-bezier(.22,1,.36,1);}
+    .gallery-item:hover img{transform:scale(1.1);}
+    .gallery-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.72) 0%,rgba(0,0,0,.18) 55%,transparent 100%);opacity:0;transition:opacity .4s ease;}
+    .gallery-item:hover .gallery-overlay{opacity:1;}
+    .gallery-redline{position:absolute;top:0;left:0;right:0;height:2px;background:#dc2626;transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.22,1,.36,1);}
+    .gallery-item:hover .gallery-redline{transform:scaleX(1);}
+
+    /* ---- LIGHTBOX ---- */
+    #gallery-lb{display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.96);backdrop-filter:blur(10px);flex-direction:column;align-items:center;justify-content:center;}
+    #gallery-lb.open{display:flex;}
+    #lb-img{max-height:75vh;max-width:calc(100vw - 120px);width:auto;height:auto;object-fit:contain;border-radius:16px;box-shadow:0 40px 80px rgba(0,0,0,.8);}
+</style>
+</head>
+<body class="antialiased overflow-x-hidden selection:bg-red-600 selection:text-white">
+  <div id="c-dot"></div>
+  <div id="c-ring"></div>
+  <div class="scanlines"></div>
+
+  <!-- NAV -->
+  <header id="site-header" class="fixed top-3 inset-x-0 z-50 px-3 sm:px-6 flex justify-center">
+    <nav class="w-full max-w-7xl bg-black/85 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl">
+
+      <!-- Main bar -->
+      <div class="px-5 sm:px-7 py-3.5 flex items-center justify-between">
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center shrink-0">
+          <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-9 w-auto">
+        </a>
+
+        <!-- Desktop links -->
+        <div class="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-widest text-white/60">
+          <a href="index.html#home"    class="nav-link hover:text-white transition">Home</a>
+          <a href="index.html#about"   class="nav-link hover:text-white transition">About Us</a>
+          <a href="menu.html"          class="nav-link hover:text-white transition">Menu</a>
+          <a href="reserve.html"  class="nav-link hover:text-white transition">Events</a>
+          <a href="gallery.html"       class="nav-link active text-white transition">Gallery</a>
+          <a href="contact.html" class="nav-link hover:text-white transition">Contact</a>
+        </div>
+
+        <!-- Desktop CTA + mobile hamburger -->
+        <div class="flex items-center gap-3">
+          <a href="reserve.html" class="hidden sm:inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-[11px] uppercase tracking-widest font-semibold px-5 py-2.5 rounded-xl">
+            Reserve a Table
+            <iconify-icon icon="solar:arrow-right-linear" width="13"></iconify-icon>
+          </a>
+          <!-- Hamburger -->
+          <button id="nav-toggle" aria-label="Toggle menu" class="lg:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5 rounded-lg border border-white/15 hover:border-red-500 transition">
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile dropdown -->
+      <div id="mobile-menu" class="lg:hidden border-t border-white/8">
+        <div class="px-5 py-5 flex flex-col gap-1">
+          <a href="index.html#home"    class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Home</a>
+          <a href="index.html#about"   class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">About Us</a>
+          <a href="menu.html"          class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Menu</a>
+          <a href="reserve.html"  class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Events</a>
+          <a href="gallery.html"       class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white hover:bg-white/5 uppercase tracking-widest transition">Gallery</a>
+          <a href="contact.html" class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Contact</a>
+          <div class="mt-3 pt-3 border-t border-white/10">
+            <a href="reserve.html" class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-sm uppercase tracking-widest font-semibold px-5 py-3 rounded-xl">
+              Reserve a Table
+              <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </nav>
+  </header>
+
+  <!-- PAGE HERO -->
+  <section class="relative pt-40 pb-16 overflow-hidden">
+    <div class="absolute inset-0 grain opacity-40"></div>
+    <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent pointer-events-none"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 text-center">
+      <p class="font-serif-it text-red-400 text-xl mb-3">A feast for the eyes —</p>
+      <h1 class="font-display text-white leading-none tracking-tight" style="font-size: clamp(72px, 14vw, 180px)">
+        THE <span class="text-red-600">GALLERY</span>
+      </h1>
+      <p class="mt-6 text-sm text-white/50 max-w-md mx-auto">
+        Dishes, atmosphere &amp; moments — crafted with care. Click any image to explore.
+      </p>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="py-16 px-4 sm:px-6 relative overflow-hidden bg-black">
+    <div class="absolute inset-0 grain opacity-30 pointer-events-none"></div>
+    <div class="absolute left-1/2 -translate-x-1/2 top-1/3 w-[700px] h-[400px] bg-red-900/12 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative max-w-7xl mx-auto">
+
+      <!-- count label -->
+      <div class="reveal-me flex justify-end mb-8">
+        <p class="font-display text-xl text-white/20 tracking-widest">24 IMAGES</p>
+      </div>
+
+      <!-- Masonry grid -->
+      <div class="gallery-masonry" id="gallery-grid">
+
+        <div class="gallery-item" data-index="0">
+          <img src=".vscode/image%20assets/ginger%20images-01.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">01</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="1">
+          <img src=".vscode/image%20assets/ginger%20images-02.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">02</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="2">
+          <img src=".vscode/image%20assets/ginger%20images-03.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">03</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="3">
+          <img src=".vscode/image%20assets/ginger%20images-04.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">04</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="4">
+          <img src=".vscode/image%20assets/ginger%20images-05.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">05</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="5">
+          <img src=".vscode/image%20assets/ginger%20images-06.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">06</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="6">
+          <img src=".vscode/image%20assets/ginger%20images-07.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">07</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="7">
+          <img src=".vscode/image%20assets/ginger%20images-08.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">08</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="8">
+          <img src=".vscode/image%20assets/ginger%20images-09.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">09</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="9">
+          <img src=".vscode/image%20assets/ginger%20images-10.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">10</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="10">
+          <img src=".vscode/image%20assets/ginger%20images-11.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">11</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="11">
+          <img src=".vscode/image%20assets/ginger%20images-12.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">12</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="12">
+          <img src=".vscode/image%20assets/ginger%20images-13.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">13</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="13">
+          <img src=".vscode/image%20assets/ginger%20images-14.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">14</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="14">
+          <img src=".vscode/image%20assets/ginger%20images-15.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">15</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="15">
+          <img src=".vscode/image%20assets/ginger%20images-16.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">16</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="16">
+          <img src=".vscode/image%20assets/ginger%20images-17.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">17</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="17">
+          <img src=".vscode/image%20assets/ginger%20images-18.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">18</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="18">
+          <img src=".vscode/image%20assets/ginger%20images-19.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">19</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="19">
+          <img src=".vscode/image%20assets/ginger%20images-20.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">20</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="20">
+          <img src=".vscode/image%20assets/ginger%20images-21.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">21</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="21">
+          <img src=".vscode/image%20assets/ginger%20images-22.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">22</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="22">
+          <img src=".vscode/image%20assets/ginger%20images-23.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">23</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+        <div class="gallery-item" data-index="23">
+          <img src=".vscode/image%20assets/ginger%20images-24.jpg" alt="" loading="lazy">
+          <div class="gallery-overlay"><div class="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between"><span class="font-display text-white/60 text-xs tracking-widest">24</span><div class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center bg-black/30 backdrop-blur-sm"><iconify-icon icon="solar:maximize-square-linear" class="text-white" width="12"></iconify-icon></div></div></div>
+          <div class="gallery-redline"></div>
+        </div>
+
+      </div>
+
+      <!-- Bottom CTA -->
+      <div class="mt-12 flex flex-col sm:flex-row items-center justify-between gap-5 border-t border-white/8 pt-10">
+        <div class="flex items-center gap-4">
+          <div class="w-px h-10 bg-red-600"></div>
+          <p class="font-serif-it text-white/50 text-base">Every plate, a piece of art.</p>
+        </div>
+        <a href="contact.html" class="inline-flex items-center gap-2 border border-white/15 hover:border-red-500 hover:text-white text-white/60 text-xs uppercase tracking-widest font-semibold px-7 py-3 rounded-full transition">
+          <iconify-icon icon="solar:instagram-linear" width="16"></iconify-icon>
+          Follow @eatatginger
+        </a>
+      </div>
+
+    </div>
+
+    <!-- LIGHTBOX -->
+    <div id="gallery-lb" role="dialog" aria-modal="true">
+
+      <!-- close -->
+      <button id="lb-close" aria-label="Close" class="absolute top-5 right-5 w-11 h-11 rounded-full border border-white/20 hover:border-red-500 text-white/60 hover:text-red-400 flex items-center justify-center transition z-10">
+        <iconify-icon icon="solar:close-linear" width="20"></iconify-icon>
+      </button>
+
+      <!-- image stage -->
+      <div class="relative flex items-center justify-center w-full px-16 sm:px-24">
+        <button id="lb-prev" aria-label="Previous" class="absolute left-4 sm:left-6 w-11 h-11 rounded-full border border-white/20 hover:border-red-500 hover:bg-red-600 text-white/60 hover:text-white flex items-center justify-center transition">
+          <iconify-icon icon="solar:arrow-left-linear" width="20"></iconify-icon>
+        </button>
+
+        <img id="lb-img" src="" alt="">
+
+        <button id="lb-next" aria-label="Next" class="absolute right-4 sm:right-6 w-11 h-11 rounded-full border border-white/20 hover:border-red-500 hover:bg-red-600 text-white/60 hover:text-white flex items-center justify-center transition">
+          <iconify-icon icon="solar:arrow-right-linear" width="20"></iconify-icon>
+        </button>
+      </div>
+
+      <!-- counter + progress -->
+      <div class="mt-7 flex flex-col items-center gap-3">
+        <span id="lb-counter" class="font-display text-white/40 text-sm tracking-[0.3em]">01 / 24</span>
+        <div class="w-40 h-px bg-white/10 relative overflow-hidden rounded-full">
+          <div id="lb-progress" class="absolute left-0 top-0 h-full bg-red-600 transition-all duration-400" style="width:4.17%"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-black border-t border-white/10 px-4 sm:px-6 py-10">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center">
+        <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-10 w-auto">
+      </div>
+      <p class="text-xs uppercase tracking-widest text-white/40">
+        © 2024 Red Ginger · Nairobi, Kenya
+      </p>
+      <div class="flex items-center gap-3">
+        <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+          <iconify-icon icon="solar:instagram-linear" width="18"></iconify-icon>
+        </a>
+        <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+          <iconify-icon icon="solar:tiktok-linear" width="18"></iconify-icon>
+        </a>
+        <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
+          <iconify-icon icon="solar:facebook-linear" width="18"></iconify-icon>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+
+    /* ===================== CUSTOM CURSOR ===================== */
+    var dot  = document.getElementById('c-dot');
+    var ring = document.getElementById('c-ring');
+    var mx = -100, my = -100, rx = -100, ry = -100;
+
+    document.addEventListener('mousemove', function (e) {
+      mx = e.clientX; my = e.clientY;
+      dot.style.transform = 'translate(' + (mx - 4) + 'px,' + (my - 4) + 'px)';
+    });
+    (function ringLoop() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.transform = 'translate(' + (rx - 19) + 'px,' + (ry - 19) + 'px)';
+      requestAnimationFrame(ringLoop);
+    })();
+    document.querySelectorAll('a, button').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { document.body.classList.add('cursor-hover'); });
+      el.addEventListener('mouseleave', function () { document.body.classList.remove('cursor-hover'); });
+    });
+
+    /* ===================== LIGHTBOX ===================== */
+    var TOTAL = 24;
+    var cur   = 0;
+    var lb    = document.getElementById('gallery-lb');
+    var lbImg = document.getElementById('lb-img');
+    var lbCtr = document.getElementById('lb-counter');
+    var lbBar = document.getElementById('lb-progress');
+
+    function imgSrc(i){ var n=i<9?'0'+(i+1):''+(i+1); return '.vscode/image%20assets/ginger%20images-'+n+'.jpg'; }
+    function pad(n){ return n<10?'0'+n:''+n; }
+
+    function show(){
+      lbImg.src = imgSrc(cur);
+      lbCtr.textContent = pad(cur+1)+' / '+pad(TOTAL);
+      lbBar.style.width = ((cur+1)/TOTAL*100)+'%';
+    }
+    function open(i){ cur=i; show(); lb.classList.add('open'); document.body.classList.add('lb-open'); }
+    function close(){ lb.classList.remove('open'); document.body.classList.remove('lb-open'); }
+    function prev(){ cur=(cur-1+TOTAL)%TOTAL; show(); }
+    function next(){ cur=(cur+1)%TOTAL; show(); }
+
+    document.querySelectorAll('.gallery-item[data-index]').forEach(function(el){
+      el.addEventListener('click', function(){ open(parseInt(el.getAttribute('data-index'),10)); });
+    });
+    document.getElementById('lb-close').addEventListener('click', close);
+    document.getElementById('lb-prev').addEventListener('click', prev);
+    document.getElementById('lb-next').addEventListener('click', next);
+    lb.addEventListener('click', function(e){ if(e.target===lb) close(); });
+    document.addEventListener('keydown', function(e){
+      if(!lb.classList.contains('open')) return;
+      if(e.key==='Escape')      close();
+      if(e.key==='ArrowLeft')  prev();
+      if(e.key==='ArrowRight') next();
+    });
+
+    /* ===================== SCROLL REVEAL ===================== */
+    var revealTargets = [];
+    document.querySelectorAll('.reveal-me').forEach(function(el){ revealTargets.push(el); });
+
+    var revealObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px 60px 0px' });
+
+    revealTargets.forEach(function (el) { revealObs.observe(el); });
+    setTimeout(function () { revealTargets.forEach(function (el) { el.classList.add('revealed'); }); }, 1500);
+
+    /* ===================== NAV HIDE ON SCROLL ===================== */
+    var siteHeader  = document.getElementById('site-header');
+    var lastScrollY = 0;
+    var scrollTick  = false;
+    window.addEventListener('scroll', function () {
+      if (!scrollTick) {
+        window.requestAnimationFrame(function () {
+          var current = window.scrollY;
+          if (current > lastScrollY && current > 100) {
+            siteHeader.classList.add('nav-hidden');
+          } else {
+            siteHeader.classList.remove('nav-hidden');
+          }
+          lastScrollY = current <= 0 ? 0 : current;
+          scrollTick = false;
+        });
+        scrollTick = true;
+      }
+    });
+
+    /* ===================== MOBILE MENU TOGGLE ===================== */
+    var navToggle  = document.getElementById('nav-toggle');
+    var mobileMenu = document.getElementById('mobile-menu');
+    var hamLines   = navToggle ? navToggle.querySelectorAll('.ham-line') : [];
+    var menuOpen   = false;
+
+    function setMenu(open) {
+      menuOpen = open;
+      mobileMenu.classList.toggle('open', open);
+      if (hamLines.length === 3) {
+        if (open) {
+          hamLines[0].style.transform = 'translateY(6px) rotate(45deg)';
+          hamLines[1].style.opacity   = '0';
+          hamLines[2].style.transform = 'translateY(-6px) rotate(-45deg)';
+        } else {
+          hamLines[0].style.transform = '';
+          hamLines[1].style.opacity   = '';
+          hamLines[2].style.transform = '';
+        }
+      }
+    }
+
+    if (navToggle) {
+      navToggle.addEventListener('click', function () { setMenu(!menuOpen); });
+    }
+    document.querySelectorAll('.mobile-nav-link').forEach(function (link) {
+      link.addEventListener('click', function () { setMenu(false); });
+    });
+    document.addEventListener('click', function (e) {
+      if (menuOpen && siteHeader && !siteHeader.contains(e.target)) { setMenu(false); }
+    });
+
+    /* ===================== RIPPLE ON PRIMARY BUTTONS ===================== */
+    document.querySelectorAll('a.bg-red-600, button.bg-red-600').forEach(function (btn) {
+      btn.style.overflow = 'hidden';
+      btn.addEventListener('click', function (e) {
+        var wave = document.createElement('span');
+        var r    = btn.getBoundingClientRect();
+        var size = Math.max(r.width, r.height) * 2.5;
+        wave.className    = 'ripple-wave';
+        wave.style.cssText = 'width:' + size + 'px;height:' + size + 'px;'
+          + 'left:' + (e.clientX - r.left - size / 2) + 'px;'
+          + 'top:'  + (e.clientY - r.top  - size / 2) + 'px;';
+        btn.appendChild(wave);
+        setTimeout(function () { wave.remove(); }, 700);
+      });
+    });
+
+  })();
+  </script>
+
+</body>
+</html>

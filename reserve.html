@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reserve — RED GINGER · Traverse City, MI</title>
+<title>Reserve — RED GINGER · Nairobi, Kenya</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,6 +41,19 @@
   /* NAV BREATHE */
   header nav { animation:nav-breathe 4s ease-in-out infinite; }
   @keyframes nav-breathe { 0%,100%{box-shadow:0 8px 32px rgba(0,0,0,.6);}50%{box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 40px rgba(220,38,38,.15);} }
+
+  /* NAV HIDE */
+  header { transition:transform .42s cubic-bezier(.4,0,.2,1); }
+  header.nav-hidden { transform:translateY(-130%); }
+
+  /* MOBILE MENU */
+  #mobile-menu { max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1); }
+  #mobile-menu.open { max-height:420px; }
+
+  /* NAV LINK */
+  .nav-link { position:relative; }
+  .nav-link::after { content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:#dc2626;transition:width .25s ease; }
+  .nav-link:hover::after,.nav-link.active::after { width:100%; }
 
   /* SCROLL REVEAL */
   .reveal-me { opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1); }
@@ -186,21 +199,48 @@
   </div>
 
   <!-- NAV -->
-  <header class="fixed top-3 inset-x-0 z-50 px-3 sm:px-6 flex justify-center">
-    <nav class="w-full max-w-7xl bg-black/80 backdrop-blur border border-white/10 rounded-xl px-4 sm:px-6 py-3 flex items-center justify-between shadow-2xl">
-      <a href="index.html" class="flex items-center">
-        <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-10 w-auto">
-      </a>
-      <div class="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest text-white/70">
-        <a href="index.html#burgers" class="hover:text-white transition">Small Plates</a>
-        <a href="index.html#hotdogs" class="hover:text-white transition">Sushi</a>
-        <a href="menu.html" class="hover:text-white transition">Menu</a>
-        <a href="index.html#contact" class="hover:text-white transition">Contact</a>
+  <header id="site-header" class="fixed top-3 inset-x-0 z-50 px-3 sm:px-6 flex justify-center">
+    <nav class="w-full max-w-7xl bg-black/85 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl">
+      <div class="px-5 sm:px-7 py-3.5 flex items-center justify-between">
+        <a href="index.html" class="flex items-center shrink-0">
+          <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-9 w-auto">
+        </a>
+        <div class="hidden lg:flex items-center gap-7 text-[11px] uppercase tracking-widest text-white/60">
+          <a href="index.html"       class="nav-link hover:text-white transition">Home</a>
+          <a href="index.html#about" class="nav-link hover:text-white transition">About Us</a>
+          <a href="menu.html"        class="nav-link hover:text-white transition">Menu</a>
+          <a href="reserve.html"     class="nav-link active hover:text-white transition">Events</a>
+          <a href="gallery.html"     class="nav-link hover:text-white transition">Gallery</a>
+          <a href="contact.html"     class="nav-link hover:text-white transition">Contact</a>
+        </div>
+        <div class="flex items-center gap-3">
+          <a href="reserve.html" class="hidden sm:inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-[11px] uppercase tracking-widest font-semibold px-5 py-2.5 rounded-xl">
+            Reserve a Table
+            <iconify-icon icon="solar:arrow-right-linear" width="13"></iconify-icon>
+          </a>
+          <button id="nav-toggle" aria-label="Toggle menu" class="lg:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5 rounded-lg border border-white/15 hover:border-red-500 transition">
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+            <span class="ham-line block w-4.5 h-px bg-white transition-all duration-300"></span>
+          </button>
+        </div>
       </div>
-      <span class="inline-flex items-center gap-2 bg-red-600 text-white text-xs uppercase tracking-widest font-semibold px-4 py-2 rounded-lg opacity-80">
-        Reserve
-        <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
-      </span>
+      <div id="mobile-menu" class="lg:hidden border-t border-white/8">
+        <div class="px-5 py-5 flex flex-col gap-1">
+          <a href="index.html"       class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Home</a>
+          <a href="index.html#about" class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">About Us</a>
+          <a href="menu.html"        class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Menu</a>
+          <a href="reserve.html"     class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white hover:bg-white/5 uppercase tracking-widest transition">Events</a>
+          <a href="gallery.html"     class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Gallery</a>
+          <a href="contact.html"     class="mobile-nav-link py-3 px-4 rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/5 uppercase tracking-widest transition">Contact</a>
+          <div class="mt-3 pt-3 border-t border-white/10">
+            <a href="reserve.html" class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 transition text-white text-sm uppercase tracking-widest font-semibold px-5 py-3 rounded-xl">
+              Reserve a Table
+              <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
+            </a>
+          </div>
+        </div>
+      </div>
     </nav>
   </header>
 
@@ -215,7 +255,7 @@
       <div class="max-w-3xl">
         <div class="flex items-center gap-3 mb-6 rise">
           <span class="w-1.5 h-1.5 rounded-full bg-red-500 flicker"></span>
-          <span class="text-xs uppercase tracking-[0.3em] text-white/50">Traverse City · MI</span>
+          <span class="text-xs uppercase tracking-[0.3em] text-white/50">Nairobi · Kenya</span>
           <span class="text-white/20">·</span>
           <span class="text-xs uppercase tracking-[0.3em] text-white/50">Tue – Sat · 4:00 — 22:00</span>
         </div>
@@ -732,7 +772,7 @@
       <a href="index.html" class="flex items-center">
         <img src=".vscode/image assets/red ginger-01.svg" alt="Red Ginger" class="h-10 w-auto">
       </a>
-      <p class="text-xs uppercase tracking-widest text-white/40">© 2024 Red Ginger · Traverse City, MI</p>
+      <p class="text-xs uppercase tracking-widest text-white/40">© 2024 Red Ginger · Nairobi, Kenya</p>
       <div class="flex items-center gap-3">
         <a href="#" class="w-10 h-10 rounded-lg border border-white/10 hover:border-red-500 hover:text-red-500 text-white/70 transition flex items-center justify-center">
           <iconify-icon icon="solar:instagram-linear" width="18"></iconify-icon>
@@ -1030,6 +1070,32 @@ function submitReservation() {
   overlay.classList.add('show');
   document.body.style.overflow = 'hidden';
 }
+
+/* NAV HIDE ON SCROLL */
+var siteHeader = document.getElementById('site-header');
+var lastScrollY = 0;
+window.addEventListener('scroll', function () {
+  var current = window.scrollY;
+  if (current > lastScrollY && current > 100) { siteHeader.classList.add('nav-hidden'); }
+  else { siteHeader.classList.remove('nav-hidden'); }
+  lastScrollY = current <= 0 ? 0 : current;
+});
+/* MOBILE MENU */
+var navToggle = document.getElementById('nav-toggle');
+var mobileMenu = document.getElementById('mobile-menu');
+var hamLines = navToggle ? navToggle.querySelectorAll('.ham-line') : [];
+var menuOpen = false;
+function setMenu(open) {
+  menuOpen = open;
+  mobileMenu.classList.toggle('open', open);
+  if (hamLines.length === 3) {
+    if (open) { hamLines[0].style.transform='translateY(6px) rotate(45deg)'; hamLines[1].style.opacity='0'; hamLines[2].style.transform='translateY(-6px) rotate(-45deg)'; }
+    else { hamLines[0].style.transform=''; hamLines[1].style.opacity=''; hamLines[2].style.transform=''; }
+  }
+}
+if (navToggle) navToggle.addEventListener('click', function () { setMenu(!menuOpen); });
+document.querySelectorAll('.mobile-nav-link').forEach(function (l) { l.addEventListener('click', function () { setMenu(false); }); });
+document.addEventListener('click', function (e) { if (menuOpen && siteHeader && !siteHeader.contains(e.target)) setMenu(false); });
 </script>
 
 </body>
